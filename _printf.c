@@ -31,13 +31,21 @@ int _printf(const char *format, ...)
 int process_format(const char *format, va_list args)
 {
 	int count = 0, i = 0;
+	int specifier_count;
 
 	while (format[i])
 	{
 		if (format[i] == '%')
-			count += handle_specifier(format, &i, args);
+		{
+			specifier_count = handle_specifier(format, &i, args);
+			if (specifier_count == -1)
+				return (-1);
+			count += specifier_count;
+		}
 		else
+		{
 			count += write_char(format[i]);
+		}
 		i++;
 	}
 	return (count);
@@ -66,7 +74,11 @@ int handle_specifier(const char *format, int *i, va_list args)
 	else if (format[*i] == '%')
 		count = print_percent(args);
 	else
-		count = write_specifier(format[*i]);
+	{
+		write(1, "%", 1);
+		write(1, &format[*i], 1);
+		count = 2;
+	}
 
 	return (count);
 }
@@ -80,17 +92,4 @@ int handle_specifier(const char *format, int *i, va_list args)
 int write_char(char c)
 {
 	return (write(1, &c, 1));
-}
-
-/**
- * write_specifier - write unknown specifier
- * @c: specifier character
- *
- * Return: number of characters written (always 2)
- */
-int write_specifier(char c)
-{
-	write(1, "%", 1);
-	write(1, &c, 1);
-	return (2);
 }
