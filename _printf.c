@@ -1,97 +1,38 @@
 #include "main.h"
-
 /**
- * _printf - produces output according to a format
- * @format: character string containing directives
- *
- * Return: number of characters printed (excluding null byte)
- */
+*_printf - produces output accourding to the format
+*
+*@format: format string containing format specifiers
+*
+*Return: number of character printed
+*/
 int _printf(const char *format, ...)
 {
 va_list args;
-int count = 0;
-
-if (format == NULL)
+int c = 0;
+if (!format || (format[0] == '%' && format[1] == '\0'))
 return (-1);
-
 va_start(args, format);
-count = process_format(format, args);
+
+while (*format)
+{
+if (*format == '%')
+format++;
+if (*format == 'c')
+c += _putchar(va_arg(args, int));
+else if (*format == 's')
+c += print_string(va_arg(args, char *));
+else if (*format == '%')
+c += _putchar('%');
+else if (*format == 'd' || *format == 'i')
+c += print_number(va_arg(args, int));
+else
+{
+c += _putchar('%');
+c += _putchar(*format);
+}
+}
 va_end(args);
+return (c);
 
-return (count);
-}
-
-/**
- * process_format - process the format string
- * @format: format string to process
- * @args: variable arguments list
- *
- * Return: number of characters printed
- */
-int process_format(const char *format, va_list args)
-{
-int count = 0, i = 0;
-int specifier_count;
-
-while (format[i])
-{
-if (format[i] == '%')
-{
-specifier_count = handle_specifier(format, &i, args);
-if (specifier_count == -1)
-return (-1);
-count += specifier_count;
-}
-else
-{
-count += write_char(format[i]);
-}
-i++;
-}
-return (count);
-}
-
-/**
- * handle_specifier - handle format specifiers
- * @format: format string
- * @i: pointer to current index
- * @args: variable arguments list
- *
- * Return: number of characters printed for specifier
- */
-int handle_specifier(const char *format, int *i, va_list args)
-{
-int count = 0;
-
-(*i)++;
-if (format[*i] == '\0')
-return (-1);
-
-if (format[*i] == 'c')
-count = print_char(args);
-else if (format[*i] == 's')
-count = print_string(args);
-else if (format[*i] == '%')
-count = print_percent(args);
-else if (format[*i] == 'd' || format[*i] == 'i')
-count = print_int(args);
-else
-{
-write(1, "%", 1);
-write(1, &format[*i], 1);
-count = 2;
-}
-
-return (count);
-}
-
-/**
- * write_char - write a single character
- * @c: character to write
- *
- * Return: 1 (number of characters written)
- */
-int write_char(char c)
-{
-return (write(1, &c, 1));
 }
