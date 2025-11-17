@@ -29,6 +29,69 @@ int print_string(va_list args, char buffer[], int *buff_ind)
 }
 
 /**
+ * print_custom_string - prints a string with special handling for non-printable chars
+ * @args: arguments list
+ * @buffer: character buffer
+ * @buff_ind: pointer to buffer index
+ *
+ * Return: number of characters printed
+ */
+int print_custom_string(va_list args, char buffer[], int *buff_ind)
+{
+    char *str = va_arg(args, char *);
+    int count = 0;
+    unsigned char c;
+
+    if (str == NULL)
+        str = "(null)";
+
+    while (*str)
+    {
+        c = (unsigned char)*str;
+       
+        if (c < 32 || c >= 127)
+        {
+            /* Print \x followed by 2-digit hex (uppercase) */
+            buffer_char('\\', buffer, buff_ind);
+            buffer_char('x', buffer, buff_ind);
+            count += 2;
+            count += print_hex_byte(c, buffer, buff_ind);
+        }
+        else
+        {
+            buffer_char(c, buffer, buff_ind);
+            count++;
+        }
+        str++;
+    }
+    return (count);
+}
+
+/**
+ * print_hex_byte - prints a byte as 2-digit hexadecimal (uppercase)
+ * @c: byte to print
+ * @buffer: character buffer
+ * @buff_ind: pointer to buffer index
+ *
+ * Return: number of characters printed (always 2)
+ */
+int print_hex_byte(unsigned char c, char buffer[], int *buff_ind)
+{
+    int count = 0;
+    char hex_digits[] = "0123456789ABCDEF";
+
+    /* Print first hex digit */
+    buffer_char(hex_digits[(c >> 4) & 0x0F], buffer, buff_ind);
+    count++;
+   
+    /* Print second hex digit */
+    buffer_char(hex_digits[c & 0x0F], buffer, buff_ind);
+    count++;
+
+    return (count);
+}
+
+/**
  * print_percent - prints a percent sign
  * @args: arguments list (unused)
  * @buffer: character buffer
