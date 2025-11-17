@@ -3,27 +3,18 @@
 
 #include <stdarg.h>
 #include <unistd.h>
+#include <stdlib.h>
 
-/**
- * struct format_s - format specifier structure
- * @spec: format specifier character
- * @func: pointer to corresponding function
- */
-typedef struct format_s
-{
-    char spec;
-    int (*func)(va_list);
-} format_t;
-
-/* Main printf function */
 int _printf(const char *format, ...);
-
-/* Helper functions */
-int _putchar(char c);
-
-/* Format specifier functions */
 int print_char(va_list args);
 int print_string(va_list args);
 int print_percent(va_list args);
+
+/* تعريف الـ structure هنا مباشرة */
+typedef struct format_specifier
+{
+    char specifier;
+    int (*func)(va_list);
+} format_specifier_t;
 
 #endif /* MAIN_H */
