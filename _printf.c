@@ -44,14 +44,14 @@ int _printf(const char *format, ...)
             
             if (specifiers[j].specifier == '\0')
             {
-                write(1, "%", 1);
-                write(1, &format[i], 1);
+                _putchar('%');
+                _putchar(format[i]);
                 count += 2;
             }
         }
         else
         {
-            write(1, &format[i], 1);
+            _putchar(format[i]);
             count++;
         }
         i++;
@@ -59,4 +59,16 @@ int _printf(const char *format, ...)
     
     va_end(args);
     return (count);
+}
+
+/**
+ * _putchar - writes the character c to stdout
+ * @c: The character to print
+ *
+ * Return: On success 1.
+ * On error, -1 is returned, and errno is set appropriately.
+ */
+int _putchar(char c)
+{
+    return (write(1, &c, 1));
 }
