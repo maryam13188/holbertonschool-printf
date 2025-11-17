@@ -15,6 +15,7 @@ int buffer_char(char c, char buffer[], int *buff_ind);
 int buffer_string(char *str, char buffer[], int *buff_ind);
 int print_char(va_list args, char buffer[], int *buff_ind);
 int print_string(va_list args, char buffer[], int *buff_ind);
+int print_custom_string(va_list args, char buffer[], int *buff_ind);
 int print_percent(va_list args, char buffer[], int *buff_ind);
 int print_int(va_list args, char buffer[], int *buff_ind);
 int print_number(int n, char buffer[], int *buff_ind);
@@ -25,5 +26,6 @@ int print_octal(va_list args, char buffer[], int *buff_ind);
 int print_hex_lower(va_list args, char buffer[], int *buff_ind);
 int print_hex_upper(va_list args, char buffer[], int *buff_ind);
 int print_unsigned_number(unsigned int n, unsigned int base, const char *digits, char buffer[], int *buff_ind);
+int print_hex_byte(unsigned char c, char buffer[], int *buff_ind);
 
 #endif /* MAIN_H */
