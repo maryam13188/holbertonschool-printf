@@ -1,4 +1,4 @@
-TH _PRINTF 3 "December 2023" "Custom printf" "Linux Programmer's Manual"
+.TH _PRINTF 3 "NOV 2025" "printf Manual"
 .SH NAME
 _printf \- custom formatted output conversion function
 .SH SYNOPSIS
@@ -41,6 +41,15 @@ The
 argument is expected to be a pointer to an array of character type
 (pointer to a string). Characters from the array are written up to
 (but not including) a terminating null byte (\\0).
+.TP
+.B S
+The
+.B "const char *"
+argument is expected to be a pointer to a string. Characters from the array
+are written up to (but not including) a terminating null byte (\\0). Non
+printable characters (0 < ASCII value < 32 or >= 127) are printed as \\x
+followed by the ASCII code value in hexadecimal (upper case - always 2
+characters).
 .TP
 .B d
 The
@@ -122,6 +131,7 @@ int main(void)
     printf("Character:[%c]\\n", 'H');
     _printf("String:[%s]\\n", "I am a string !");
     printf("String:[%s]\\n", "I am a string !");
+    _printf("Custom string:[%S]\\n", "Best\\nSchool");
     _printf("Binary of 98: %b\\n", 98);
     _printf("Percent:[%%]\\n");
     printf("Percent:[%%]\\n");
