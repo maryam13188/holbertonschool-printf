@@ -52,6 +52,11 @@ The
 .B int
 argument is converted to signed decimal notation.
 .TP
+.B b
+The
+.B "unsigned int"
+argument is converted to binary notation.
+.TP
 .B %
 A '\%' is written. No argument is converted. The complete conversion 
 specification is '\%\%'.
@@ -86,6 +91,7 @@ int main(void)
     printf("Character:[%c]\\n", 'H');
     _printf("String:[%s]\\n", "I am a string !");
     printf("String:[%s]\\n", "I am a string !");
+    _printf("Binary of 98: %b\\n", 98);
     _printf("Percent:[%%]\\n");
     printf("Percent:[%%]\\n");
     return (0);
@@ -111,4 +117,5 @@ Length modifiers
 Buffer handling like the C library printf
 .SH SEE ALSO
 .BR printf (3)
- AUTHORS
+.SH AUTHORS
+Developed by Holberton School students.
