@@ -8,9 +8,9 @@
  */
 int print_char(va_list args)
 {
-char c = va_arg(args, int);
+	char c = va_arg(args, int);
 
-return (write(1, &c, 1));
+	return (write(1, &c, 1));
 }
 
 /**
@@ -21,19 +21,19 @@ return (write(1, &c, 1));
  */
 int print_string(va_list args)
 {
-char *str = va_arg(args, char *);
-int count = 0;
+	char *str = va_arg(args, char *);
+	int count = 0;
 
-if (str == NULL)
-str = "(null)";
+	if (str == NULL)
+		str = "(null)";
 
-while (str[count])
-{
-write(1, &str[count], 1);
-count++;
-}
+	while (str[count])
+	{
+		write(1, &str[count], 1);
+		count++;
+	}
 
-return (count);
+	return (count);
 }
 
 /**
@@ -44,8 +44,8 @@ return (count);
  */
 int print_percent(va_list args)
 {
-(void)args;
-return (write(1, "%", 1));
+	(void)args;
+	return (write(1, "%", 1));
 }
 
 /**
@@ -56,8 +56,8 @@ return (write(1, "%", 1));
  */
 int print_int(va_list args)
 {
-int n = va_arg(args, int);
-return (print_number(n));
+	int n = va_arg(args, int);
+	return (print_number(n));
 }
 
 /**
@@ -68,22 +68,51 @@ return (print_number(n));
  */
 int print_number(int n)
 {
-int count = 0;
-unsigned int num;
+	int count = 0;
+	unsigned int num;
 
-if (n < 0)
-{
-count += write(1, "-", 1);
-num = -n;
+	if (n < 0)
+	{
+		count += write(1, "-", 1);
+		num = -n;
+	}
+	else
+	{
+		num = n;
+	}
+
+	if (num / 10)
+		count += print_number(num / 10);
+
+	count += write(1, &"0123456789"[num % 10], 1);
+	return (count);
 }
-else
+
+/**
+ * print_binary - prints an unsigned int in binary
+ * @args: arguments list
+ *
+ * Return: number of characters printed
+ */
+int print_binary(va_list args)
 {
-num = n;
+	unsigned int n = va_arg(args, unsigned int);
+	return (print_binary_recursive(n));
 }
 
-if (num / 10)
-count += print_number(num / 10);
+/**
+ * print_binary_recursive - prints binary recursively
+ * @n: number to print in binary
+ *
+ * Return: number of characters printed
+ */
+int print_binary_recursive(unsigned int n)
+{
+	int count = 0;
 
-count += write(1, &"0123456789"[num % 10], 1);
-return (count);
+	if (n / 2)
+		count += print_binary_recursive(n / 2);
+
+	count += write(1, &"01"[n % 2], 1);
+	return (count);
 }
