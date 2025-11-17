@@ -9,14 +9,7 @@
 int _printf(const char *format, ...)
 {
     va_list args;
-    int count = 0, i = 0, j;
-    
-    format_specifier_t specifiers[] = {
-        {'c', print_char},
-        {'s', print_string},
-        {'%', print_percent},
-        {'\0', NULL}
-    };
+    int count = 0, i = 0;
     
     if (format == NULL)
         return (-1);
@@ -31,27 +24,23 @@ int _printf(const char *format, ...)
             if (format[i] == '\0')
                 return (-1);
             
-            j = 0;
-            while (specifiers[j].specifier != '\0')
+            /* استخدم switch بدل structure */
+            if (format[i] == 'c')
+                count += print_char(args);
+            else if (format[i] == 's')
+                count += print_string(args);
+            else if (format[i] == '%')
+                count += print_percent(args);
+            else
             {
-                if (format[i] == specifiers[j].specifier)
-                {
-                    count += specifiers[j].func(args);
-                    break;
-                }
-                j++;
-            }
-            
-            if (specifiers[j].specifier == '\0')
-            {
-                _putchar('%');
-                _putchar(format[i]);
+                write(1, "%", 1);
+                write(1, &format[i], 1);
                 count += 2;
             }
         }
         else
         {
-            _putchar(format[i]);
+            write(1, &format[i], 1);
             count++;
         }
         i++;
@@ -59,16 +48,4 @@ int _printf(const char *format, ...)
     
     va_end(args);
     return (count);
-}
-
-/**
- * _putchar - writes the character c to stdout
- * @c: The character to print
- *
- * Return: On success 1.
- * On error, -1 is returned, and errno is set appropriately.
- */
-int _putchar(char c)
-{
-    return (write(1, &c, 1));
 }
