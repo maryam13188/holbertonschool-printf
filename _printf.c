@@ -35,7 +35,6 @@ int specifier_count;
 
 while (format[i])
 {
-{
 if (format[i] == '%')
 {
 specifier_count = handle_specifier(format, &i, args);
