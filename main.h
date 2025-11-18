@@ -12,9 +12,15 @@
 #define FLAG_SPACE  2
 #define FLAG_HASH   4
 
+/* Length modifiers */
+#define LENGTH_NONE 0
+#define LENGTH_L    1
+#define LENGTH_H    2
+
 typedef struct format_info
 {
     int flags;
+    int length;
 } format_info_t;
 
 /* Main printf function */
@@ -32,17 +38,15 @@ int print_custom_string(va_list args, char buffer[], int *buff_ind, format_info_
 int print_pointer(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_percent(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_int(va_list args, char buffer[], int *buff_ind, format_info_t info);
-int print_number(int n, char buffer[], int *buff_ind, format_info_t info);
+int print_number(long n, char buffer[], int *buff_ind, format_info_t info);
 int print_binary(va_list args, char buffer[], int *buff_ind, format_info_t info);
-int print_binary_recursive(unsigned int n, char buffer[], int *buff_ind, format_info_t info);
 int print_unsigned(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_octal(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_hex_lower(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_hex_upper(va_list args, char buffer[], int *buff_ind, format_info_t info);
-int print_unsigned_number(unsigned int n, unsigned int base, const char *digits, char buffer[], int *buff_ind, format_info_t info);
+int print_unsigned_number(unsigned long n, unsigned int base, const char *digits, char buffer[], int *buff_ind, format_info_t info);
 
 /* Helper functions */
-int parse_flags(const char *format, int *i, format_info_t *info);
 int handle_specifier(const char *format, int *i, va_list args, char buffer[], int *buff_ind);
 
 #endif /* MAIN_H */
