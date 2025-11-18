@@ -16,16 +16,29 @@ string and writes it to stdout, the standard output stream.
 .PP
 The
 .I format
-string is composed of zero or more directives. See man 3 printf for more 
-detail. Ordinary characters (not %) are copied unchanged to the output 
-stream. Conversion specifications are introduced by the character % and 
+string is composed of zero or more directives. See man 3 printf for more
+detail. Ordinary characters (not %) are copied unchanged to the output
+stream. Conversion specifications are introduced by the character % and
 end with a conversion specifier.
 .PP
-This implementation does not reproduce the buffer handling of the C 
-library printf function. It does not handle flag characters, field width, 
-precision, or length modifiers.
+Between the % character and the conversion specifier, there may be zero or
+more flag characters that modify the behavior of the conversion.
+.SH FLAG CHARACTERS
+The flag characters and their meanings are:
+.TP
+.B +
+The result of a signed conversion always begins with a sign (+ or -).
+.TP
+.B space
+If the first character of a signed conversion is not a sign, a space is
+prefixed to the result.
+.TP
+.B #
+For o conversions, the first digit of the output becomes 0. For x and X
+conversions, the output is prefixed with 0x or 0X respectively, unless
+the value is zero.
 .SH CONVERSION SPECIFIERS
-A character that specifies the type of conversion to be applied. 
+A character that specifies the type of conversion to be applied.
 The conversion specifiers and their meanings are:
 .TP
 .B c
@@ -38,24 +51,24 @@ and the resulting character is written.
 .B s
 The
 .B "const char *"
-argument is expected to be a pointer to an array of character type 
-(pointer to a string). Characters from the array are written up to 
+argument is expected to be a pointer to an array of character type
+(pointer to a string). Characters from the array are written up to
 (but not including) a terminating null byte (\\0).
 .TP
 .B S
 The
 .B "const char *"
-argument is expected to be a pointer to a string. Characters from the array 
-are written up to (but not including) a terminating null byte (\\0). Non 
-printable characters (0 < ASCII value < 32 or >= 127) are printed as \\x 
-followed by the ASCII code value in hexadecimal (upper case - always 2 
+argument is expected to be a pointer to a string. Characters from the array
+are written up to (but not including) a terminating null byte (\\0). Non
+printable characters (0 < ASCII value < 32 or >= 127) are printed as \\x
+followed by the ASCII code value in hexadecimal (upper case - always 2
 characters).
 .TP
 .B p
 The
 .B "void *"
-argument is converted to a sequence of printable characters in hexadecimal 
-format (as if by %#x or %#lx). The value is prefixed with '0x'. If the 
+argument is converted to a sequence of printable characters in hexadecimal
+format (as if by %#x or %#lx). The value is prefixed with '0x'. If the
 pointer is NULL, the string '(nil)' is printed.
 .TP
 .B d
@@ -94,12 +107,12 @@ The
 argument is converted to unsigned hexadecimal notation (uppercase).
 .TP
 .B %
-A '\%' is written. No argument is converted. The complete conversion 
+A '\%' is written. No argument is converted. The complete conversion
 specification is '\%\%'.
 .SH RETURN VALUE
 Upon successful return, the
 .B _printf()
-function returns the number of characters printed (excluding the null 
+function returns the number of characters printed (excluding the null
 byte used to end output to strings).
 .PP
 If an output error is encountered, \-1 is returned.
@@ -128,12 +141,16 @@ int main(void)
     printf("Length:[%d, %i]\\n", len2, len2);
     _printf("Negative:[%d]\\n", \-762534);
     printf("Negative:[%d]\\n", \-762534);
+    _printf("Positive with plus:[%+d]\\n", 762534);
+    _printf("Positive with space:[% d]\\n", 762534);
     _printf("Unsigned:[%u]\\n", ui);
     printf("Unsigned:[%u]\\n", ui);
     _printf("Unsigned octal:[%o]\\n", ui);
     printf("Unsigned octal:[%o]\\n", ui);
+    _printf("Octal with hash:[%#o]\\n", 100);
     _printf("Unsigned hexadecimal:[%x, %X]\\n", ui, ui);
     printf("Unsigned hexadecimal:[%x, %X]\\n", ui, ui);
+    _printf("Hex with hash:[%#x, %#X]\\n", 255, 255);
     _printf("Character:[%c]\\n", 'H');
     printf("Character:[%c]\\n", 'H');
     _printf("String:[%s]\\n", "I am a string !");
@@ -150,9 +167,6 @@ int main(void)
 .in
 .SH BUGS
 This implementation does not handle the following:
-.TP
-.B \(bu
-Flag characters
 .TP
 .B \(bu
 Field width
