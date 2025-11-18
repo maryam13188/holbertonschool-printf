@@ -29,7 +29,7 @@ int buffer_char(char c, char buffer[], int *buff_ind)
 {
     if (*buff_ind == BUFFER_SIZE)
         flush_buffer(buffer, buff_ind);
-   
+    
     buffer[*buff_ind] = c;
     (*buff_ind)++;
     return (1);
@@ -59,41 +59,7 @@ int buffer_string(char *str, char buffer[], int *buff_ind)
 }
 
 /**
- * parse_flags - parse flag characters from format string
- * @format: format string
- * @i: pointer to current index
- * @info: pointer to format info structure
- *
- * Return: number of flag characters parsed
- */
-int parse_flags(const char *format, int *i, format_info_t *info)
-{
-    int count = 0;
-    char c;
-
-    info->flags = 0;
-   
-    while (1)
-    {
-        c = format[*i + count + 1];
-       
-        if (c == '+')
-            info->flags |= FLAG_PLUS;
-        else if (c == ' ')
-            info->flags |= FLAG_SPACE;
-        else if (c == '#')
-            info->flags |= FLAG_HASH;
-        else
-            break;
-           
-        count++;
-    }
-   
-    return (count);
-}
-
-/**
- * handle_specifier - handle format specifiers with flags
+ * handle_specifier - handle format specifiers
  * @format: format string
  * @i: pointer to current index
  * @args: variable arguments list
@@ -105,43 +71,33 @@ int parse_flags(const char *format, int *i, format_info_t *info)
 int handle_specifier(const char *format, int *i, va_list args, char buffer[], int *buff_ind)
 {
     int count = 0;
-    format_info_t info = {0};
-    int flags_parsed;
 
     (*i)++;
     if (format[*i] == '\0')
         return (-1);
 
-    /* Parse flags */
-    flags_parsed = parse_flags(format, i, &info);
-    *i += flags_parsed;
-
-    if (format[*i] == '\0')
-        return (-1);
-
-    /* Handle specifiers with flags */
     if (format[*i] == 'c')
-        count = print_char(args, buffer, buff_ind, info);
+        count = print_char(args, buffer, buff_ind);
     else if (format[*i] == 's')
-        count = print_string(args, buffer, buff_ind, info);
+        count = print_string(args, buffer, buff_ind);
     else if (format[*i] == 'S')
-        count = print_custom_string(args, buffer, buff_ind, info);
+        count = print_custom_string(args, buffer, buff_ind);
     else if (format[*i] == 'p')
-        count = print_pointer(args, buffer, buff_ind, info);
+        count = print_pointer(args, buffer, buff_ind);
     else if (format[*i] == '%')
-        count = print_percent(args, buffer, buff_ind, info);
+        count = print_percent(args, buffer, buff_ind);
     else if (format[*i] == 'd' || format[*i] == 'i')
-        count = print_int(args, buffer, buff_ind, info);
+        count = print_int(args, buffer, buff_ind);
     else if (format[*i] == 'b')
-        count = print_binary(args, buffer, buff_ind, info);
+        count = print_binary(args, buffer, buff_ind);
     else if (format[*i] == 'u')
-        count = print_unsigned(args, buffer, buff_ind, info);
+        count = print_unsigned(args, buffer, buff_ind);
     else if (format[*i] == 'o')
-        count = print_octal(args, buffer, buff_ind, info);
+        count = print_octal(args, buffer, buff_ind);
     else if (format[*i] == 'x')
-        count = print_hex_lower(args, buffer, buff_ind, info);
+        count = print_hex_lower(args, buffer, buff_ind);
     else if (format[*i] == 'X')
-        count = print_hex_upper(args, buffer, buff_ind, info);
+        count = print_hex_upper(args, buffer, buff_ind);
     else
     {
         buffer_char('%', buffer, buff_ind);
