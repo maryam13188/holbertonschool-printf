@@ -77,13 +77,16 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
     char temp_buffer[BUFFER_SIZE];
     int temp_buff_ind = 0;
     int j, temp_count;
+    char c;
+    char *str;
+    int str_len;
 
     (*i)++; /* Skip % */
     
     if (format[*i] == '\0')
         return (-1);
 
-    /* Parse field width - FIXED: Parse before checking for specifiers */
+    /* Parse field width */
     if (format[*i] == '*')
     {
         info.width = parse_width(format, i, args);
@@ -111,7 +114,7 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
     /* Handle specifiers with proper field width application */
     if (format[*i] == 'c')
     {
-        char c = va_arg(args, int);
+        c = va_arg(args, int);
         if (info.width > 1)
         {
             count += apply_field_width(buffer, buff_ind, info, 1, 0);
@@ -120,11 +123,11 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
     }
     else if (format[*i] == 's')
     {
-        char *str = va_arg(args, char *);
+        str = va_arg(args, char *);
         if (str == NULL)
             str = "(null)";
         
-        int str_len = 0;
+        str_len = 0;
         while (str[str_len])
             str_len++;
             
