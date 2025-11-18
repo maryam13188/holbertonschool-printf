@@ -29,7 +29,7 @@ int buffer_char(char c, char buffer[], int *buff_ind)
 {
     if (*buff_ind == BUFFER_SIZE)
         flush_buffer(buffer, buff_ind);
-   
+    
     buffer[*buff_ind] = c;
     (*buff_ind)++;
     return (1);
@@ -72,11 +72,11 @@ int parse_flags(const char *format, int *i, format_info_t *info)
     char c;
 
     info->flags = 0;
-   
+    
     while (1)
     {
         c = format[*i + count + 1];
-       
+        
         if (c == '+')
             info->flags |= FLAG_PLUS;
         else if (c == ' ')
@@ -85,10 +85,10 @@ int parse_flags(const char *format, int *i, format_info_t *info)
             info->flags |= FLAG_HASH;
         else
             break;
-           
+            
         count++;
     }
-   
+    
     return (count);
 }
 
