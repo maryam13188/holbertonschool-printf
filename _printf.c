@@ -1,39 +1,7 @@
 #include "main.h"
 
 /**
- * parse_flags - parse flag characters from format string
- * @format: format string
- * @i: pointer to current index
- * @info: pointer to format info structure
- *
- * Return: number of flag characters parsed
- */
-int parse_flags(const char *format, int *i, format_info_t *info)
-{
-    int j = *i + 1;
-    int count = 0;
-
-    info->flags = 0;
-    
-    while (format[j] == '+' || format[j] == ' ' || format[j] == '#')
-    {
-        if (format[j] == '+')
-            info->flags |= FLAG_PLUS;
-        else if (format[j] == ' ')
-            info->flags |= FLAG_SPACE;
-        else if (format[j] == '#')
-            info->flags |= FLAG_HASH;
-        
-        j++;
-        count++;
-    }
-    
-    *i = j - 1;
-    return (count);
-}
-
-/**
- * handle_specifier - handle format specifiers with flags
+ * handle_specifier - handle format specifiers with length modifiers
  * @format: format string
  * @i: pointer to current index
  * @args: variable arguments list
@@ -45,19 +13,30 @@ int parse_flags(const char *format, int *i, format_info_t *info)
 int handle_specifier(const char *format, int *i, va_list args, char buffer[], int *buff_ind)
 {
     int count = 0;
-    format_info_t info = {0};
+    format_info_t info = {0, LENGTH_NONE};
+    int start_index = *i;
 
-    (*i)++;
+    (*i)++; // تخطي %
+    
     if (format[*i] == '\0')
         return (-1);
 
-    /* Parse flags */
-    parse_flags(format, i, &info);
+    /* تحليل length modifiers - السؤال 9 */
+    if (format[*i] == 'l')
+    {
+        info.length = LENGTH_L;
+        (*i)++;
+    }
+    else if (format[*i] == 'h')
+    {
+        info.length = LENGTH_H;
+        (*i)++;
+    }
 
     if (format[*i] == '\0')
         return (-1);
 
-    /* Handle specifiers with flags */
+    /* Handle specifiers */
     if (format[*i] == 'c')
         count = print_char(args, buffer, buff_ind, info);
     else if (format[*i] == 's')
