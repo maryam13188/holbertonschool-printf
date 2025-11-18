@@ -55,7 +55,12 @@ int print_custom_string(va_list args, char buffer[], int *buff_ind)
             buffer_char('\\', buffer, buff_ind);
             buffer_char('x', buffer, buff_ind);
             count += 2;
-            count += print_hex_byte(c, buffer, buff_ind);
+            
+            /* Print hex digits manually */
+            char hex_digits[] = "0123456789ABCDEF";
+            buffer_char(hex_digits[(c >> 4) & 0x0F], buffer, buff_ind);
+            buffer_char(hex_digits[c & 0x0F], buffer, buff_ind);
+            count += 2;
         }
         else
         {
@@ -64,28 +69,6 @@ int print_custom_string(va_list args, char buffer[], int *buff_ind)
         }
         str++;
     }
-    return (count);
-}
-
-/**
- * print_hex_byte - prints a byte as 2-digit hexadecimal (uppercase)
- * @c: byte to print
- * @buffer: character buffer
- * @buff_ind: pointer to buffer index
- *
- * Return: number of characters printed (always 2)
- */
-int print_hex_byte(unsigned char c, char buffer[], int *buff_ind)
-{
-    int count = 0;
-    char hex_digits[] = "0123456789ABCDEF";
-
-    buffer_char(hex_digits[(c >> 4) & 0x0F], buffer, buff_ind);
-    count++;
-    
-    buffer_char(hex_digits[c & 0x0F], buffer, buff_ind);
-    count++;
-
     return (count);
 }
 
@@ -107,21 +90,9 @@ int print_pointer(va_list args, char buffer[], int *buff_ind)
     buffer_char('0', buffer, buff_ind);
     buffer_char('x', buffer, buff_ind);
     
-    return (2 + print_pointer_address(ptr, buffer, buff_ind));
-}
-
-/**
- * print_pointer_address - prints pointer address in hexadecimal
- * @ptr: pointer to print
- * @buffer: character buffer
- * @buff_ind: pointer to buffer index
- *
- * Return: number of characters printed
- */
-int print_pointer_address(void *ptr, char buffer[], int *buff_ind)
-{
+    /* Print pointer address directly */
     unsigned long address = (unsigned long)ptr;
-    int count = 0;
+    int count = 2; /* for '0x' */
     char hex_digits[] = "0123456789abcdef";
     int started = 0;
     int digit;
@@ -131,7 +102,7 @@ int print_pointer_address(void *ptr, char buffer[], int *buff_ind)
     if (address == 0)
     {
         buffer_char('0', buffer, buff_ind);
-        return (1);
+        return (3); /* '0x0' */
     }
 
     for (; shift >= 0; shift -= 4)
@@ -363,7 +334,7 @@ int handle_specifier_with_flags(const char *format, int *i, va_list args, char b
     int start_index = *i;
     char specifier;
 
-    (*i)++;
+    (*i)++; /* Skip the % */
     if (format[*i] == '\0')
         return (-1);
 
