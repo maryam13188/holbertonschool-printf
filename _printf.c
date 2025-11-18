@@ -29,7 +29,7 @@ int buffer_char(char c, char buffer[], int *buff_ind)
 {
     if (*buff_ind == BUFFER_SIZE)
         flush_buffer(buffer, buff_ind);
-   
+    
     buffer[*buff_ind] = c;
     (*buff_ind)++;
     return (1);
@@ -82,6 +82,8 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
         count = print_string(args, buffer, buff_ind);
     else if (format[*i] == 'S')
         count = print_custom_string(args, buffer, buff_ind);
+    else if (format[*i] == 'p')
+        count = print_pointer(args, buffer, buff_ind);
     else if (format[*i] == '%')
         count = print_percent(args, buffer, buff_ind);
     else if (format[*i] == 'd' || format[*i] == 'i')
