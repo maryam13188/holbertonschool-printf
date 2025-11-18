@@ -40,6 +40,7 @@ int print_percent(va_list args, char buffer[], int *buff_ind, format_info_t info
 int print_int(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_number(long n, char buffer[], int *buff_ind, format_info_t info);
 int print_binary(va_list args, char buffer[], int *buff_ind, format_info_t info);
+int print_binary_recursive(unsigned int n, char buffer[], int *buff_ind, format_info_t info); /* Added prototype */
 int print_unsigned(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_octal(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_hex_lower(va_list args, char buffer[], int *buff_ind, format_info_t info);
