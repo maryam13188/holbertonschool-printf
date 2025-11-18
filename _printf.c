@@ -14,14 +14,13 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
 {
     int count = 0;
     format_info_t info = {0, LENGTH_NONE};
-    int start_index = *i;
 
-    (*i)++; // تخطي %
+    (*i)++; /* Skip % */
     
     if (format[*i] == '\0')
         return (-1);
 
-    /* تحليل length modifiers - السؤال 9 */
+    /* Parse length modifiers - Task 9 */
     if (format[*i] == 'l')
     {
         info.length = LENGTH_L;
