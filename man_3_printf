@@ -1,4 +1,4 @@
-.TH _PRINTF 3 "December 2023" "Custom printf" "Linux Programmer's Manual"
+.TH _PRINTF 3 "NOV 2025 "Custom printf Manual"
 .SH NAME
 _printf \- custom formatted output conversion function
 .SH SYNOPSIS
@@ -16,19 +16,27 @@ string and writes it to stdout, the standard output stream.
 .PP
 The
 .I format
-string is composed of zero or more directives. Ordinary characters (not %) are copied unchanged to the output stream. Conversion specifications are introduced by the character % and end with a conversion specifier.
+string is composed of zero or more directives. See man 3 printf for more
+detail. Ordinary characters (not %) are copied unchanged to the output
+stream. Conversion specifications are introduced by the character % and
+end with a conversion specifier.
 .PP
-This implementation supports the following flag characters for non-custom conversion specifiers:
+Between the % character and the conversion specifier, there may be zero or
+more flag characters that modify the behavior of the conversion.
+.SH FLAG CHARACTERS
+The flag characters and their meanings are:
 .TP
 .B +
-Forces the result to include a sign (+ or -) for signed conversions. By default, only negative numbers include a sign.
+The result of a signed conversion always begins with a sign (+ or -).
 .TP
 .B space
-If no sign is going to be written, a blank space is inserted before the value.
+If the first character of a signed conversion is not a sign, a space is
+prefixed to the result.
 .TP
 .B #
-For o conversions, the first character of the output string is made zero (by prefixing a 0 if it was not zero already).
-For x and X conversions, a nonzero result has the string "0x" (or "0X" for X conversions) prepended to it.
+For o conversions, the first digit of the output becomes 0. For x and X
+conversions, the output is prefixed with 0x or 0X respectively, unless
+the value is zero.
 .SH CONVERSION SPECIFIERS
 A character that specifies the type of conversion to be applied.
 The conversion specifiers and their meanings are:
@@ -43,17 +51,25 @@ and the resulting character is written.
 .B s
 The
 .B "const char *"
-argument is expected to be a pointer to an array of character type (pointer to a string). Characters from the array are written up to (but not including) a terminating null byte (\\0).
+argument is expected to be a pointer to an array of character type
+(pointer to a string). Characters from the array are written up to
+(but not including) a terminating null byte (\\0).
 .TP
 .B S
 The
 .B "const char *"
-argument is expected to be a pointer to a string. Characters from the array are written up to (but not including) a terminating null byte (\\0). Non printable characters (0 < ASCII value < 32 or >= 127) are printed as \\x followed by the ASCII code value in hexadecimal (upper case - always 2 characters).
+argument is expected to be a pointer to a string. Characters from the array
+are written up to (but not including) a terminating null byte (\\0). Non
+printable characters (0 < ASCII value < 32 or >= 127) are printed as \\x
+followed by the ASCII code value in hexadecimal (upper case - always 2
+characters).
 .TP
 .B p
 The
 .B "void *"
-argument is converted to a sequence of printable characters in hexadecimal format (as if by %#x or %#lx). The value is prefixed with '0x'. If the pointer is NULL, the string '(nil)' is printed.
+argument is converted to a sequence of printable characters in hexadecimal
+format (as if by %#x or %#lx). The value is prefixed with '0x'. If the
+pointer is NULL, the string '(nil)' is printed.
 .TP
 .B d
 The
@@ -91,46 +107,60 @@ The
 argument is converted to unsigned hexadecimal notation (uppercase).
 .TP
 .B %
-A '\%' is written. No argument is converted. The complete conversion specification is '\%\%'.
-.SH FLAG CHARACTERS
-The following flag characters are supported for non-custom conversion specifiers (d, i, u, o, x, X):
-.TP
-.B +
-For signed conversions, always include a sign (+ or -).
-Example: %+d prints +123 for positive numbers.
-.TP
-.B space
-For signed conversions, include a space for positive numbers.
-Example: % d prints " 123" for positive numbers.
-.TP
-.B #
-For o conversion, force 0 prefix for nonzero numbers.
-Example: %#o prints 0173 for 123.
-For x conversion, force 0x prefix for nonzero numbers.
-Example: %#x prints 0xff for 255.
-For X conversion, force 0X prefix for nonzero numbers.
-Example: %#X prints 0XFF for 255.
+A '\%' is written. No argument is converted. The complete conversion
+specification is '\%\%'.
 .SH RETURN VALUE
 Upon successful return, the
 .B _printf()
-function returns the number of characters printed (excluding the null byte used to end output to strings).
+function returns the number of characters printed (excluding the null
+byte used to end output to strings).
 .PP
 If an output error is encountered, \-1 is returned.
 .SH EXAMPLES
 The following example demonstrates the use of
-.BR _printf() with flags:
+.BR _printf() :
 .PP
 .in +4n
 .EX
+#include <stdio.h>
+#include <limits.h>
 #include "main.h"
 
 int main(void)
 {
-    _printf("Flag +: %+d\\n", 123);      /* prints "+123" */
-    _printf("Flag space: % d\\n", 123);  /* prints " 123" */
-    _printf("Flag # octal: %#o\\n", 123); /* prints "0173" */
-    _printf("Flag # hex: %#x\\n", 255);  /* prints "0xff" */
-    _printf("Flag # HEX: %#X\\n", 255);  /* prints "0XFF" */
+    int len;
+    int len2;
+    unsigned int ui;
+    void *addr;
+
+    len = _printf("Let's try to printf a simple sentence.\\n");
+    len2 = printf("Let's try to printf a simple sentence.\\n");
+    ui = (unsigned int)INT_MAX + 1024;
+    addr = (void *)0x7ffe637541f0;
+    _printf("Length:[%d, %i]\\n", len, len);
+    printf("Length:[%d, %i]\\n", len2, len2);
+    _printf("Negative:[%d]\\n", \-762534);
+    printf("Negative:[%d]\\n", \-762534);
+    _printf("Positive with plus:[%+d]\\n", 762534);
+    _printf("Positive with space:[% d]\\n", 762534);
+    _printf("Unsigned:[%u]\\n", ui);
+    printf("Unsigned:[%u]\\n", ui);
+    _printf("Unsigned octal:[%o]\\n", ui);
+    printf("Unsigned octal:[%o]\\n", ui);
+    _printf("Octal with hash:[%#o]\\n", 100);
+    _printf("Unsigned hexadecimal:[%x, %X]\\n", ui, ui);
+    printf("Unsigned hexadecimal:[%x, %X]\\n", ui, ui);
+    _printf("Hex with hash:[%#x, %#X]\\n", 255, 255);
+    _printf("Character:[%c]\\n", 'H');
+    printf("Character:[%c]\\n", 'H');
+    _printf("String:[%s]\\n", "I am a string !");
+    printf("String:[%s]\\n", "I am a string !");
+    _printf("Address:[%p]\\n", addr);
+    printf("Address:[%p]\\n", addr);
+    _printf("Custom string:[%S]\\n", "Best\\nSchool");
+    _printf("Binary of 98: %b\\n", 98);
+    _printf("Percent:[%%]\\n");
+    printf("Percent:[%%]\\n");
     return (0);
 }
 .EE
@@ -152,4 +182,4 @@ Buffer handling like the C library printf
 .SH SEE ALSO
 .BR printf (3)
 .SH AUTHORS
-Developed by Holberton School students.
+Munirahenad , Maryam13188.
