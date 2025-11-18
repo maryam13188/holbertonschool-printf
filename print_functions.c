@@ -1,17 +1,18 @@
 #include "main.h"
-#include <limits.h>
 
 /**
  * print_char - prints a character
  * @args: arguments list
  * @buffer: character buffer
  * @buff_ind: pointer to buffer index
+ * @info: format information
  *
  * Return: number of characters printed (1)
  */
-int print_char(va_list args, char buffer[], int *buff_ind)
+int print_char(va_list args, char buffer[], int *buff_ind, format_info_t info)
 {
     char c = va_arg(args, int);
+    (void)info; /* Flags not used for characters */
     return (buffer_char(c, buffer, buff_ind));
 }
 
@@ -20,12 +21,14 @@ int print_char(va_list args, char buffer[], int *buff_ind)
  * @args: arguments list
  * @buffer: character buffer
  * @buff_ind: pointer to buffer index
+ * @info: format information
  *
  * Return: number of characters printed
  */
-int print_string(va_list args, char buffer[], int *buff_ind)
+int print_string(va_list args, char buffer[], int *buff_ind, format_info_t info)
 {
     char *str = va_arg(args, char *);
+    (void)info; /* Flags not used for strings */
     return (buffer_string(str, buffer, buff_ind));
 }
 
@@ -34,14 +37,17 @@ int print_string(va_list args, char buffer[], int *buff_ind)
  * @args: arguments list
  * @buffer: character buffer
  * @buff_ind: pointer to buffer index
+ * @info: format information
  *
  * Return: number of characters printed
  */
-int print_custom_string(va_list args, char buffer[], int *buff_ind)
+int print_custom_string(va_list args, char buffer[], int *buff_ind, format_info_t info)
 {
     char *str = va_arg(args, char *);
     int count = 0;
     unsigned char c;
+
+    (void)info; /* Flags not used for custom strings */
 
     if (str == NULL)
         str = "(null)";
@@ -52,10 +58,11 @@ int print_custom_string(va_list args, char buffer[], int *buff_ind)
        
         if (c < 32 || c >= 127)
         {
+            /* Print \x followed by 2-digit hex (uppercase) */
             buffer_char('\\', buffer, buff_ind);
             buffer_char('x', buffer, buff_ind);
             count += 2;
-            count += print_hex_byte(c, buffer, buff_ind);
+            count += print_hex_byte(c, buffer, buff_ind, info);
         }
         else
         {
@@ -72,17 +79,22 @@ int print_custom_string(va_list args, char buffer[], int *buff_ind)
  * @c: byte to print
  * @buffer: character buffer
  * @buff_ind: pointer to buffer index
+ * @info: format information
  *
  * Return: number of characters printed (always 2)
  */
-int print_hex_byte(unsigned char c, char buffer[], int *buff_ind)
+int print_hex_byte(unsigned char c, char buffer[], int *buff_ind, format_info_t info)
 {
     int count = 0;
     char hex_digits[] = "0123456789ABCDEF";
 
+    (void)info; /* Flags not used for hex bytes */
+
+    /* Print first hex digit */
     buffer_char(hex_digits[(c >> 4) & 0x0F], buffer, buff_ind);
     count++;
    
+    /* Print second hex digit */
     buffer_char(hex_digits[c & 0x0F], buffer, buff_ind);
     count++;
 
@@ -94,20 +106,23 @@ int print_hex_byte(unsigned char c, char buffer[], int *buff_ind)
  * @args: arguments list
  * @buffer: character buffer
  * @buff_ind: pointer to buffer index
+ * @info: format information
  *
  * Return: number of characters printed
  */
-int print_pointer(va_list args, char buffer[], int *buff_ind)
+int print_pointer(va_list args, char buffer[], int *buff_ind, format_info_t info)
 {
     void *ptr = va_arg(args, void *);
    
+    (void)info; /* Flags not used for pointers */
+
     if (ptr == NULL)
         return (buffer_string("(nil)", buffer, buff_ind));
    
     buffer_char('0', buffer, buff_ind);
     buffer_char('x', buffer, buff_ind);
    
-    return (2 + print_pointer_address(ptr, buffer, buff_ind));
+    return (2 + print_pointer_address(ptr, buffer, buff_ind, info));
 }
 
 /**
@@ -115,10 +130,11 @@ int print_pointer(va_list args, char buffer[], int *buff_ind)
  * @ptr: pointer to print
  * @buffer: character buffer
  * @buff_ind: pointer to buffer index
+ * @info: format information
  *
  * Return: number of characters printed
  */
-int print_pointer_address(void *ptr, char buffer[], int *buff_ind)
+int print_pointer_address(void *ptr, char buffer[], int *buff_ind, format_info_t info)
 {
     unsigned long address = (unsigned long)ptr;
     int count = 0;
@@ -128,12 +144,16 @@ int print_pointer_address(void *ptr, char buffer[], int *buff_ind)
     unsigned long mask = 0xF;
     int shift = (sizeof(void *) * 8) - 4;
 
+    (void)info; /* Flags not used for pointer addresses */
+
+    /* Handle the case when address is 0 */
     if (address == 0)
     {
         buffer_char('0', buffer, buff_ind);
         return (1);
     }
 
+    /* Print hexadecimal digits, skipping leading zeros */
     for (; shift >= 0; shift -= 4)
     {
         digit = (address >> shift) & mask;
@@ -154,45 +174,65 @@ int print_pointer_address(void *ptr, char buffer[], int *buff_ind)
  * @args: arguments list (unused)
  * @buffer: character buffer
  * @buff_ind: pointer to buffer index
+ * @info: format information
  *
  * Return: number of characters printed (1)
  */
-int print_percent(va_list args, char buffer[], int *buff_ind)
+int print_percent(va_list args, char buffer[], int *buff_ind, format_info_t info)
 {
     (void)args;
+    (void)info; /* Flags not used for percent */
     return (buffer_char('%', buffer, buff_ind));
 }
 
 /**
- * print_int - prints an integer
+ * print_int - prints an integer with flags
  * @args: arguments list
  * @buffer: character buffer
  * @buff_ind: pointer to buffer index
+ * @info: format information
  *
  * Return: number of characters printed
  */
-int print_int(va_list args, char buffer[], int *buff_ind)
+int print_int(va_list args, char buffer[], int *buff_ind, format_info_t info)
 {
     int n = va_arg(args, int);
-    return (print_number(n, buffer, buff_ind));
+    return (print_number(n, buffer, buff_ind, info));
 }
 
 /**
- * print_number - prints a number recursively
+ * print_number - prints a number recursively with flags
  * @n: number to print
  * @buffer: character buffer
  * @buff_ind: pointer to buffer index
+ * @info: format information
  *
  * Return: number of characters printed
  */
-int print_number(int n, char buffer[], int *buff_ind)
+int print_number(int n, char buffer[], int *buff_ind, format_info_t info)
 {
     int count = 0;
     unsigned int num;
 
+    /* Handle + flag for positive numbers */
+    if (n >= 0)
+    {
+        if (info.flags & FLAG_PLUS)
+        {
+            buffer_char('+', buffer, buff_ind);
+            count++;
+        }
+        else if (info.flags & FLAG_SPACE)
+        {
+            buffer_char(' ', buffer, buff_ind);
+            count++;
+        }
+    }
+
     if (n < 0)
     {
-        count += buffer_char('-', buffer, buff_ind);
+        buffer_char('-', buffer, buff_ind);
+        count++;
         num = -n;
     }
     else
@@ -201,7 +241,7 @@ int print_number(int n, char buffer[], int *buff_ind)
     }
 
     if (num / 10)
-        count += print_number(num / 10, buffer, buff_ind);
+        count += print_number(num / 10, buffer, buff_ind, info);
 
     count += buffer_char("0123456789"[num % 10], buffer, buff_ind);
     return (count);
@@ -212,13 +252,15 @@ int print_number(int n, char buffer[], int *buff_ind)
  * @args: arguments list
  * @buffer: character buffer
  * @buff_ind: pointer to buffer index
+ * @info: format information
  *
  * Return: number of characters printed
  */
-int print_binary(va_list args, char buffer[], int *buff_ind)
+int print_binary(va_list args, char buffer[], int *buff_ind, format_info_t info)
 {
     unsigned int n = va_arg(args, unsigned int);
-    return (print_binary_recursive(n, buffer, buff_ind));
+    (void)info; /* Flags not used for binary */
+    return (print_binary_recursive(n, buffer, buff_ind, info));
 }
 
 /**
@@ -226,15 +268,18 @@ int print_binary(va_list args, char buffer[], int *buff_ind)
  * @n: number to print in binary
  * @buffer: character buffer
  * @buff_ind: pointer to buffer index
+ * @info: format information
  *
  * Return: number of characters printed
  */
-int print_binary_recursive(unsigned int n, char buffer[], int *buff_ind)
+int print_binary_recursive(unsigned int n, char buffer[], int *buff_ind, format_info_t info)
 {
     int count = 0;
 
+    (void)info; /* Flags not used for binary */
+
     if (n / 2)
-        count += print_binary_recursive(n / 2, buffer, buff_ind);
+        count += print_binary_recursive(n / 2, buffer, buff_ind, info);
 
     count += buffer_char("01"[n % 2], buffer, buff_ind);
     return (count);
@@ -245,55 +290,92 @@ int print_binary_recursive(unsigned int n, char buffer[], int *buff_ind)
  * @args: arguments list
  * @buffer: character buffer
  * @buff_ind: pointer to buffer index
+ * @info: format information
  *
  * Return: number of characters printed
  */
-int print_unsigned(va_list args, char buffer[], int *buff_ind)
+int print_unsigned(va_list args, char buffer[], int *buff_ind, format_info_t info)
 {
     unsigned int n = va_arg(args, unsigned int);
-    return (print_unsigned_number(n, 10, "0123456789", buffer, buff_ind));
+    (void)info; /* Flags not used for unsigned decimal */
+    return (print_unsigned_number(n, 10, "0123456789", buffer, buff_ind, info));
 }
 
 /**
- * print_octal - prints an unsigned integer in octal
+ * print_octal - prints an unsigned integer in octal with # flag
  * @args: arguments list
  * @buffer: character buffer
  * @buff_ind: pointer to buffer index
+ * @info: format information
  *
  * Return: number of characters printed
  */
-int print_octal(va_list args, char buffer[], int *buff_ind)
+int print_octal(va_list args, char buffer[], int *buff_ind, format_info_t info)
 {
     unsigned int n = va_arg(args, unsigned int);
-    return (print_unsigned_number(n, 8, "01234567", buffer, buff_ind));
+    int count = 0;
+
+    /* Handle # flag for octal */
+    if ((info.flags & FLAG_HASH) && n != 0)
+    {
+        buffer_char('0', buffer, buff_ind);
+        count++;
+    }
+
+    count += print_unsigned_number(n, 8, "01234567", buffer, buff_ind, info);
+    return (count);
 }
 
 /**
- * print_hex_lower - prints an unsigned integer in hexadecimal (lowercase)
+ * print_hex_lower - prints an unsigned integer in hexadecimal (lowercase) with # flag
  * @args: arguments list
  * @buffer: character buffer
  * @buff_ind: pointer to buffer index
+ * @info: format information
  *
  * Return: number of characters printed
  */
-int print_hex_lower(va_list args, char buffer[], int *buff_ind)
+int print_hex_lower(va_list args, char buffer[], int *buff_ind, format_info_t info)
 {
     unsigned int n = va_arg(args, unsigned int);
-    return (print_unsigned_number(n, 16, "0123456789abcdef", buffer, buff_ind));
+    int count = 0;
+
+    /* Handle # flag for hexadecimal */
+    if ((info.flags & FLAG_HASH) && n != 0)
+    {
+        buffer_char('0', buffer, buff_ind);
+        buffer_char('x', buffer, buff_ind);
+        count += 2;
+    }
+
+    count += print_unsigned_number(n, 16, "0123456789abcdef", buffer, buff_ind, info);
+    return (count);
 }
 
 /**
- * print_hex_upper - prints an unsigned integer in hexadecimal (uppercase)
+ * print_hex_upper - prints an unsigned integer in hexadecimal (uppercase) with # flag
  * @args: arguments list
  * @buffer: character buffer
  * @buff_ind: pointer to buffer index
+ * @info: format information
  *
  * Return: number of characters printed
  */
-int print_hex_upper(va_list args, char buffer[], int *buff_ind)
+int print_hex_upper(va_list args, char buffer[], int *buff_ind, format_info_t info)
 {
     unsigned int n = va_arg(args, unsigned int);
-    return (print_unsigned_number(n, 16, "0123456789ABCDEF", buffer, buff_ind));
+    int count = 0;
+
+    /* Handle # flag for hexadecimal */
+    if ((info.flags & FLAG_HASH) && n != 0)
+    {
+        buffer_char('0', buffer, buff_ind);
+        buffer_char('X', buffer, buff_ind);
+        count += 2;
+    }
+
+    count += print_unsigned_number(n, 16, "0123456789ABCDEF", buffer, buff_ind, info);
+    return (count);
 }
 
 /**
@@ -303,208 +385,19 @@ int print_hex_upper(va_list args, char buffer[], int *buff_ind)
  * @digits: digits to use for the base
  * @buffer: character buffer
  * @buff_ind: pointer to buffer index
+ * @info: format information
  *
  * Return: number of characters printed
  */
-int print_unsigned_number(unsigned int n, unsigned int base, const char *digits, char buffer[], int *buff_ind)
+int print_unsigned_number(unsigned int n, unsigned int base, const char *digits, char buffer[], int *buff_ind, format_info_t info)
 {
     int count = 0;
+
+    (void)info; /* Flags handled in calling functions */
 
     if (n / base)
-        count += print_unsigned_number(n / base, base, digits, buffer, buff_ind);
+        count += print_unsigned_number(n / base, base, digits, buffer, buff_ind, info);
 
     count += buffer_char(digits[n % base], buffer, buff_ind);
-    return (count);
-}
-
-/* ========== QUESTION 8 - FLAG SUPPORT ========== */
-
-/**
- * parse_flags - parse flag characters
- * @format: format string
- * @i: pointer to current index
- *
- * Return: flags bitmask
- */
-int parse_flags(const char *format, int *i)
-{
-    int flags = 0;
-    int j = *i + 1;
-
-    while (format[j] == '+' || format[j] == ' ' || format[j] == '#')
-    {
-        if (format[j] == '+')
-            flags |= FLAG_PLUS;
-        else if (format[j] == ' ')
-            flags |= FLAG_SPACE;
-        else if (format[j] == '#')
-            flags |= FLAG_HASH;
-        j++;
-    }
-
-    i = j - 1; / Move index to last flag character */
-    return (flags);
-}
-
-/**
- * handle_specifier_with_flags - handle format specifiers with flags support
- * @format: format string
- * @i: pointer to current index
- * @args: variable arguments list
- * @buffer: character buffer
- * @buff_ind: pointer to buffer index
- *
- * Return: number of characters printed for specifier
- */
-int handle_specifier_with_flags(const char *format, int *i, va_list args, char buffer[], int *buff_ind)
-{
-    int count = 0;
-    int flags = 0;
-
-    (*i)++;
-    if (format[*i] == '\0')
-        return (-1);
-
-    /* Parse flags */
-    flags = parse_flags(format, i);
-
-    /* Handle specifier with flags */
-    if (format[*i] == 'c')
-        count = print_char(args, buffer, buff_ind);
-    else if (format[*i] == 's')
-        count = print_string(args, buffer, buff_ind);
-    else if (format[*i] == 'S')
-        count = print_custom_string(args, buffer, buff_ind);
-    else if (format[*i] == 'p')
-        count = print_pointer(args, buffer, buff_ind);
-    else if (format[*i] == '%')
-        count = print_percent(args, buffer, buff_ind);
-    else if (format[*i] == 'd' || format[*i] == 'i')
-        count = print_int_with_flags(args, buffer, buff_ind, flags);
-    else if (format[*i] == 'b')
-        count = print_binary(args, buffer, buff_ind);
-    else if (format[*i] == 'u')
-        count = print_unsigned(args, buffer, buff_ind);
-    else if (format[*i] == 'o')
-        count = print_octal_with_flags(args, buffer, buff_ind, flags);
-    else if (format[*i] == 'x')
-        count = print_hex_lower_with_flags(args, buffer, buff_ind, flags);
-    else if (format[*i] == 'X')
-        count = print_hex_upper_with_flags(args, buffer, buff_ind, flags);
-    else
-    {
-        buffer_char('%', buffer, buff_ind);
-        buffer_char(format[*i], buffer, buff_ind);
-        count = 2;
-    }
-
-    return (count);
-}
-
-/**
- * print_int_with_flags - prints an integer with flags
- * @args: arguments list
- * @buffer: character buffer
- * @buff_ind: pointer to buffer index
- * @flags: flags bitmask
- *
- * Return: number of characters printed
- */
-int print_int_with_flags(va_list args, char buffer[], int *buff_ind, int flags)
-{
-    int n = va_arg(args, int);
-    int count = 0;
-
-    /* Handle + flag for positive numbers */
-    if (n >= 0 && (flags & FLAG_PLUS))
-    {
-        buffer_char('+', buffer, buff_ind);
-        count++;
-    }
-    /* Handle space flag for positive numbers (if no + flag) */
-    else if (n >= 0 && (flags & FLAG_SPACE) && !(flags & FLAG_PLUS))
-    {
-        buffer_char(' ', buffer, buff_ind);
-        count++;
-    }
-
-    count += print_number(n, buffer, buff_ind);
-    return (count);
-}
-
-/**
- * print_octal_with_flags - prints an unsigned integer in octal with flags
- * @args: arguments list
- * @buffer: character buffer
- * @buff_ind: pointer to buffer index
- * @flags: flags bitmask
- *
- * Return: number of characters printed
- */
-int print_octal_with_flags(va_list args, char buffer[], int *buff_ind, int flags)
-{
-    unsigned int n = va_arg(args, unsigned int);
-    int count = 0;
-
-    /* Handle # flag for octal - prefix with 0 if number is not zero */
-    if ((flags & FLAG_HASH) && n != 0)
-    {
-        buffer_char('0', buffer, buff_ind);
-        count++;
-    }
-
-    count += print_unsigned_number(n, 8, "01234567", buffer, buff_ind);
-    return (count);
-}
-
-/**
- * print_hex_lower_with_flags - prints an unsigned integer in hexadecimal (lowercase) with flags
- * @args: arguments list
- * @buffer: character buffer
- * @buff_ind: pointer to buffer index
- * @flags: flags bitmask
- *
- * Return: number of characters printed
- */
-int print_hex_lower_with_flags(va_list args, char buffer[], int *buff_ind, int flags)
-{
-    unsigned int n = va_arg(args, unsigned int);
-    int count = 0;
-
-    /* Handle # flag for hexadecimal - prefix with 0x if number is not zero */
-    if ((flags & FLAG_HASH) && n != 0)
-    {
-        buffer_char('0', buffer, buff_ind);
-        buffer_char('x', buffer, buff_ind);
-        count += 2;
-    }
-
-    count += print_unsigned_number(n, 16, "0123456789abcdef", buffer, buff_ind);
-    return (count);
-}
-
-/**
- * print_hex_upper_with_flags - prints an unsigned integer in hexadecimal (uppercase) with flags
- * @args: arguments list
- * @buffer: character buffer
- * @buff_ind: pointer to buffer index
- * @flags: flags bitmask
- *
- * Return: number of characters printed
- */
-int print_hex_upper_with_flags(va_list args, char buffer[], int *buff_ind, int flags)
-{
-    unsigned int n = va_arg(args, unsigned int);
-    int count = 0;
-
-    /* Handle # flag for hexadecimal - prefix with 0X if number is not zero */
-    if ((flags & FLAG_HASH) && n != 0)
-    {
-        buffer_char('0', buffer, buff_ind);
-        buffer_char('X', buffer, buff_ind);
-        count += 2;
-    }
-
-    count += print_unsigned_number(n, 16, "0123456789ABCDEF", buffer, buff_ind);
     return (count);
 }
