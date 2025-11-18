@@ -48,7 +48,7 @@ int print_custom_string(va_list args, char buffer[], int *buff_ind)
     while (*str)
     {
         c = (unsigned char)*str;
-       
+        
         if (c < 32 || c >= 127)
         {
             /* Print \x followed by 2-digit hex (uppercase) */
@@ -83,10 +83,72 @@ int print_hex_byte(unsigned char c, char buffer[], int *buff_ind)
     /* Print first hex digit */
     buffer_char(hex_digits[(c >> 4) & 0x0F], buffer, buff_ind);
     count++;
-   
+    
     /* Print second hex digit */
     buffer_char(hex_digits[c & 0x0F], buffer, buff_ind);
     count++;
+
+    return (count);
+}
+
+/**
+ * print_pointer - prints a pointer address
+ * @args: arguments list
+ * @buffer: character buffer
+ * @buff_ind: pointer to buffer index
+ *
+ * Return: number of characters printed
+ */
+int print_pointer(va_list args, char buffer[], int *buff_ind)
+{
+    void *ptr = va_arg(args, void *);
+    
+    if (ptr == NULL)
+        return (buffer_string("(nil)", buffer, buff_ind));
+    
+    buffer_char('0', buffer, buff_ind);
+    buffer_char('x', buffer, buff_ind);
+    
+    return (2 + print_pointer_address(ptr, buffer, buff_ind));
+}
+
+/**
+ * print_pointer_address - prints pointer address in hexadecimal
+ * @ptr: pointer to print
+ * @buffer: character buffer
+ * @buff_ind: pointer to buffer index
+ *
+ * Return: number of characters printed
+ */
+int print_pointer_address(void *ptr, char buffer[], int *buff_ind)
+{
+    unsigned long address = (unsigned long)ptr;
+    int count = 0;
+    char hex_digits[] = "0123456789abcdef";
+    int started = 0;
+    int digit;
+    unsigned long mask = 0xF;
+    int shift = (sizeof(void *) * 8) - 4;
+
+    /* Handle the case when address is 0 */
+    if (address == 0)
+    {
+        buffer_char('0', buffer, buff_ind);
+        return (1);
+    }
+
+    /* Print hexadecimal digits, skipping leading zeros */
+    for (; shift >= 0; shift -= 4)
+    {
+        digit = (address >> shift) & mask;
+        
+        if (digit != 0 || started)
+        {
+            buffer_char(hex_digits[digit], buffer, buff_ind);
+            count++;
+            started = 1;
+        }
+    }
 
     return (count);
 }
