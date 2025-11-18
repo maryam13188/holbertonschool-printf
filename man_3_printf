@@ -16,10 +16,9 @@ string and writes it to stdout, the standard output stream.
 .PP
 The
 .I format
-string is composed of zero or more directives. See man 3 printf for more 
-detail. Ordinary characters (not %) are copied unchanged to the output 
-stream. Conversion specifications are introduced by the character % and 
-end with a conversion specifier.
+string is composed of zero or more directives. Ordinary characters (not %) 
+are copied unchanged to the output stream. Conversion specifications are 
+introduced by the character % and end with a conversion specifier.
 .PP
 Between the % character and the conversion specifier, there may be zero or 
 more flag characters that modify the behavior of the conversion.
@@ -68,8 +67,8 @@ characters).
 The
 .B "void *"
 argument is converted to a sequence of printable characters in hexadecimal 
-format (as if by %#x or %#lx). The value is prefixed with '0x'. If the 
-pointer is NULL, the string '(nil)' is printed.
+format. The value is prefixed with '0x'. If the pointer is NULL, the 
+string '(nil)' is printed.
 .TP
 .B d
 The
@@ -122,8 +121,6 @@ The following example demonstrates the use of
 .PP
 .in +4n
 .EX
-#include <stdio.h>
-#include <limits.h>
 #include "main.h"
 
 int main(void)
@@ -141,24 +138,18 @@ int main(void)
     printf("Length:[%d, %i]\\n", len2, len2);
     _printf("Negative:[%d]\\n", \-762534);
     printf("Negative:[%d]\\n", \-762534);
-    _printf("Positive with plus:[%+d]\\n", 762534);
-    _printf("Positive with space:[% d]\\n", 762534);
     _printf("Unsigned:[%u]\\n", ui);
     printf("Unsigned:[%u]\\n", ui);
     _printf("Unsigned octal:[%o]\\n", ui);
     printf("Unsigned octal:[%o]\\n", ui);
-    _printf("Octal with hash:[%#o]\\n", 100);
     _printf("Unsigned hexadecimal:[%x, %X]\\n", ui, ui);
     printf("Unsigned hexadecimal:[%x, %X]\\n", ui, ui);
-    _printf("Hex with hash:[%#x, %#X]\\n", 255, 255);
     _printf("Character:[%c]\\n", 'H');
     printf("Character:[%c]\\n", 'H');
     _printf("String:[%s]\\n", "I am a string !");
     printf("String:[%s]\\n", "I am a string !");
     _printf("Address:[%p]\\n", addr);
     printf("Address:[%p]\\n", addr);
-    _printf("Custom string:[%S]\\n", "Best\\nSchool");
-    _printf("Binary of 98: %b\\n", 98);
     _printf("Percent:[%%]\\n");
     printf("Percent:[%%]\\n");
     return (0);
