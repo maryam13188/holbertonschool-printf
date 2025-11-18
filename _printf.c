@@ -73,15 +73,17 @@ int apply_field_width(char buffer[], int *buff_ind, format_info_t info, int num_
 int handle_specifier(const char *format, int *i, va_list args, char buffer[], int *buff_ind)
 {
     int count = 0;
-    int original_count = 0;
     format_info_t info = {0, LENGTH_NONE, 0};
+    char temp_buffer[BUFFER_SIZE];
+    int temp_buff_ind = 0;
+    int j, temp_count;
 
     (*i)++; /* Skip % */
     
     if (format[*i] == '\0')
         return (-1);
 
-    /* Parse field width */
+    /* Parse field width - FIXED: Parse before checking for specifiers */
     if (format[*i] == '*')
     {
         info.width = parse_width(format, i, args);
@@ -106,24 +108,31 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
     if (format[*i] == '\0')
         return (-1);
 
-    /* Handle specifiers */
+    /* Handle specifiers with proper field width application */
     if (format[*i] == 'c')
     {
-        original_count = print_char(args, buffer, buff_ind, info);
-        count = original_count;
+        char c = va_arg(args, int);
         if (info.width > 1)
         {
-            count += apply_field_width(buffer, buff_ind, info, original_count, 0);
+            count += apply_field_width(buffer, buff_ind, info, 1, 0);
         }
+        count += buffer_char(c, buffer, buff_ind);
     }
     else if (format[*i] == 's')
     {
-        original_count = print_string(args, buffer, buff_ind, info);
-        count = original_count;
-        if (info.width > original_count)
+        char *str = va_arg(args, char *);
+        if (str == NULL)
+            str = "(null)";
+        
+        int str_len = 0;
+        while (str[str_len])
+            str_len++;
+            
+        if (info.width > str_len)
         {
-            count += apply_field_width(buffer, buff_ind, info, original_count, 0);
+            count += apply_field_width(buffer, buff_ind, info, str_len, 0);
         }
+        count += buffer_string(str, buffer, buff_ind);
     }
     else if (format[*i] == 'S')
     {
@@ -135,21 +144,29 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
     }
     else if (format[*i] == '%')
     {
-        original_count = print_percent(args, buffer, buff_ind, info);
-        count = original_count;
         if (info.width > 1)
         {
-            count += apply_field_width(buffer, buff_ind, info, original_count, 0);
+            count += apply_field_width(buffer, buff_ind, info, 1, 0);
         }
+        count += buffer_char('%', buffer, buff_ind);
     }
     else if (format[*i] == 'd' || format[*i] == 'i')
     {
-        original_count = print_int(args, buffer, buff_ind, info);
-        count = original_count;
-        if (info.width > original_count)
+        /* Use temporary buffer to calculate the number length first */
+        temp_buff_ind = 0;
+        temp_count = print_int(args, temp_buffer, &temp_buff_ind, info);
+        
+        if (info.width > temp_count)
         {
-            count += apply_field_width(buffer, buff_ind, info, original_count, 0);
+            count += apply_field_width(buffer, buff_ind, info, temp_count, 0);
         }
+        
+        /* Copy from temp buffer to main buffer */
+        for (j = 0; j < temp_buff_ind; j++)
+        {
+            buffer_char(temp_buffer[j], buffer, buff_ind);
+        }
+        count += temp_count;
     }
     else if (format[*i] == 'b')
     {
@@ -157,42 +174,75 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
     }
     else if (format[*i] == 'u')
     {
-        original_count = print_unsigned(args, buffer, buff_ind, info);
-        count = original_count;
-        if (info.width > original_count)
+        /* Use temporary buffer for unsigned numbers */
+        temp_buff_ind = 0;
+        temp_count = print_unsigned(args, temp_buffer, &temp_buff_ind, info);
+        
+        if (info.width > temp_count)
         {
-            count += apply_field_width(buffer, buff_ind, info, original_count, 0);
+            count += apply_field_width(buffer, buff_ind, info, temp_count, 0);
         }
+        
+        for (j = 0; j < temp_buff_ind; j++)
+        {
+            buffer_char(temp_buffer[j], buffer, buff_ind);
+        }
+        count += temp_count;
     }
     else if (format[*i] == 'o')
     {
-        original_count = print_octal(args, buffer, buff_ind, info);
-        count = original_count;
-        if (info.width > original_count)
+        /* Use temporary buffer for octal numbers */
+        temp_buff_ind = 0;
+        temp_count = print_octal(args, temp_buffer, &temp_buff_ind, info);
+        
+        if (info.width > temp_count)
         {
-            count += apply_field_width(buffer, buff_ind, info, original_count, 0);
+            count += apply_field_width(buffer, buff_ind, info, temp_count, 0);
         }
+        
+        for (j = 0; j < temp_buff_ind; j++)
+        {
+            buffer_char(temp_buffer[j], buffer, buff_ind);
+        }
+        count += temp_count;
     }
     else if (format[*i] == 'x')
     {
-        original_count = print_hex_lower(args, buffer, buff_ind, info);
-        count = original_count;
-        if (info.width > original_count)
+        /* Use temporary buffer for hex numbers */
+        temp_buff_ind = 0;
+        temp_count = print_hex_lower(args, temp_buffer, &temp_buff_ind, info);
+        
+        if (info.width > temp_count)
         {
-            count += apply_field_width(buffer, buff_ind, info, original_count, 0);
+            count += apply_field_width(buffer, buff_ind, info, temp_count, 0);
         }
+        
+        for (j = 0; j < temp_buff_ind; j++)
+        {
+            buffer_char(temp_buffer[j], buffer, buff_ind);
+        }
+        count += temp_count;
     }
     else if (format[*i] == 'X')
     {
-        original_count = print_hex_upper(args, buffer, buff_ind, info);
-        count = original_count;
-        if (info.width > original_count)
+        /* Use temporary buffer for hex numbers */
+        temp_buff_ind = 0;
+        temp_count = print_hex_upper(args, temp_buffer, &temp_buff_ind, info);
+        
+        if (info.width > temp_count)
         {
-            count += apply_field_width(buffer, buff_ind, info, original_count, 0);
+            count += apply_field_width(buffer, buff_ind, info, temp_count, 0);
         }
+        
+        for (j = 0; j < temp_buff_ind; j++)
+        {
+            buffer_char(temp_buffer[j], buffer, buff_ind);
+        }
+        count += temp_count;
     }
     else
     {
+        /* Unknown specifier - print as is */
         buffer_char('%', buffer, buff_ind);
         buffer_char(format[*i], buffer, buff_ind);
         count = 2;
