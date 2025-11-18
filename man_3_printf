@@ -21,21 +21,23 @@ are copied unchanged to the output stream. Conversion specifications are
 introduced by the character % and end with a conversion specifier.
 .PP
 Between the % character and the conversion specifier, there may be zero or 
-more flag characters that modify the behavior of the conversion.
-.SH FLAG CHARACTERS
-The flag characters and their meanings are:
+more flag characters or length modifiers that modify the behavior of the conversion.
+.SH LENGTH MODIFIERS
+The length modifiers and their meanings are:
 .TP
-.B +
-The result of a signed conversion always begins with a sign (+ or -).
+.B l
+The argument is interpreted as a
+.B long
+or
+.B "unsigned long"
+for integer conversions.
 .TP
-.B space
-If the first character of a signed conversion is not a sign, a space is 
-prefixed to the result.
-.TP
-.B #
-For o conversions, the first digit of the output becomes 0. For x and X 
-conversions, the output is prefixed with 0x or 0X respectively, unless 
-the value is zero.
+.B h
+The argument is interpreted as a
+.B short
+or
+.B "unsigned short"
+for integer conversions.
 .SH CONVERSION SPECIFIERS
 A character that specifies the type of conversion to be applied. 
 The conversion specifiers and their meanings are:
@@ -125,33 +127,10 @@ The following example demonstrates the use of
 
 int main(void)
 {
-    int len;
-    int len2;
-    unsigned int ui;
-    void *addr;
-
-    len = _printf("Let's try to printf a simple sentence.\\n");
-    len2 = printf("Let's try to printf a simple sentence.\\n");
-    ui = (unsigned int)INT_MAX + 1024;
-    addr = (void *)0x7ffe637541f0;
-    _printf("Length:[%d, %i]\\n", len, len);
-    printf("Length:[%d, %i]\\n", len2, len2);
-    _printf("Negative:[%d]\\n", \-762534);
-    printf("Negative:[%d]\\n", \-762534);
-    _printf("Unsigned:[%u]\\n", ui);
-    printf("Unsigned:[%u]\\n", ui);
-    _printf("Unsigned octal:[%o]\\n", ui);
-    printf("Unsigned octal:[%o]\\n", ui);
-    _printf("Unsigned hexadecimal:[%x, %X]\\n", ui, ui);
-    printf("Unsigned hexadecimal:[%x, %X]\\n", ui, ui);
-    _printf("Character:[%c]\\n", 'H');
-    printf("Character:[%c]\\n", 'H');
-    _printf("String:[%s]\\n", "I am a string !");
-    printf("String:[%s]\\n", "I am a string !");
-    _printf("Address:[%p]\\n", addr);
-    printf("Address:[%p]\\n", addr);
-    _printf("Percent:[%%]\\n");
-    printf("Percent:[%%]\\n");
+    _printf("Long integer: %ld\\n", 123456789L);
+    _printf("Short integer: %hd\\n", 12345);
+    _printf("Long unsigned: %lu\\n", 4294967295UL);
+    _printf("Short unsigned: %hu\\n", 65535);
     return (0);
 }
 .EE
@@ -164,9 +143,6 @@ Field width
 .TP
 .B \(bu
 Precision
-.TP
-.B \(bu
-Length modifiers
 .TP
 .B \(bu
 Buffer handling like the C library printf
