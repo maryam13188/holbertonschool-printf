@@ -55,7 +55,7 @@ int print_custom_string(va_list args, char buffer[], int *buff_ind, format_info_
     while (*str)
     {
         c = (unsigned char)*str;
-       
+        
         if (c < 32 || c >= 127)
         {
             /* Print \x followed by 2-digit hex (uppercase) */
@@ -93,7 +93,7 @@ int print_hex_byte(unsigned char c, char buffer[], int *buff_ind, format_info_t 
     /* Print first hex digit */
     buffer_char(hex_digits[(c >> 4) & 0x0F], buffer, buff_ind);
     count++;
-   
+    
     /* Print second hex digit */
     buffer_char(hex_digits[c & 0x0F], buffer, buff_ind);
     count++;
@@ -113,15 +113,15 @@ int print_hex_byte(unsigned char c, char buffer[], int *buff_ind, format_info_t 
 int print_pointer(va_list args, char buffer[], int *buff_ind, format_info_t info)
 {
     void *ptr = va_arg(args, void *);
-   
+    
     (void)info; /* Flags not used for pointers */
 
     if (ptr == NULL)
         return (buffer_string("(nil)", buffer, buff_ind));
-   
+    
     buffer_char('0', buffer, buff_ind);
     buffer_char('x', buffer, buff_ind);
-   
+    
     return (2 + print_pointer_address(ptr, buffer, buff_ind, info));
 }
 
@@ -157,7 +157,7 @@ int print_pointer_address(void *ptr, char buffer[], int *buff_ind, format_info_t
     for (; shift >= 0; shift -= 4)
     {
         digit = (address >> shift) & mask;
-       
+        
         if (digit != 0 || started)
         {
             buffer_char(hex_digits[digit], buffer, buff_ind);
