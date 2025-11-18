@@ -21,7 +21,13 @@ are copied unchanged to the output stream. Conversion specifications are
 introduced by the character % and end with a conversion specifier.
 .PP
 Between the % character and the conversion specifier, there may be zero or 
-more flag characters or length modifiers that modify the behavior of the conversion.
+more flag characters, length modifiers, or field width that modify the behavior of the conversion.
+.SH FIELD WIDTH
+An optional decimal digit string (with non-zero first digit) specifying 
+a minimum field width. If the converted value has fewer characters than 
+the field width, it will be padded with spaces on the left. The field 
+width can also be specified as '*' which means the width is provided 
+as an additional argument of type int.
 .SH LENGTH MODIFIERS
 The length modifiers and their meanings are:
 .TP
@@ -127,19 +133,18 @@ The following example demonstrates the use of
 
 int main(void)
 {
+    _printf("Field width: [%5d]\\n", 42);
+    _printf("Field width: [%10s]\\n", "hello");
+    _printf("Field width: [%3c]\\n", 'A');
+    _printf("Field width with *: [%*d]\\n", 8, 123);
     _printf("Long integer: %ld\\n", 123456789L);
     _printf("Short integer: %hd\\n", 12345);
-    _printf("Long unsigned: %lu\\n", 4294967295UL);
-    _printf("Short unsigned: %hu\\n", 65535);
     return (0);
 }
 .EE
 .in
 .SH BUGS
 This implementation does not handle the following:
-.TP
-.B \(bu
-Field width
 .TP
 .B \(bu
 Precision
