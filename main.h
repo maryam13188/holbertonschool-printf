@@ -7,11 +7,12 @@
 
 #define BUFFER_SIZE 1024
 
-/* Flag characters */
+/* Flag characters for question 8 */
 #define FLAG_PLUS   1
 #define FLAG_SPACE  2
 #define FLAG_HASH   4
 
+/* All original functions from questions 0-7 */
 int _printf(const char *format, ...);
 int process_format(const char *format, va_list args, char buffer[], int *buff_ind);
 int handle_specifier(const char *format, int *i, va_list args, char buffer[], int *buff_ind);
@@ -35,9 +36,9 @@ int print_unsigned_number(unsigned int n, unsigned int base, const char *digits,
 int print_hex_byte(unsigned char c, char buffer[], int *buff_ind);
 int print_pointer_address(void *ptr, char buffer[], int *buff_ind);
 
-/* New functions for flags */
-int parse_flags(const char *format, int *i);
+/* New functions for question 8 - flag support */
 int handle_specifier_with_flags(const char *format, int *i, va_list args, char buffer[], int *buff_ind);
+int parse_flags(const char *format, int *i);
 int print_int_with_flags(va_list args, char buffer[], int *buff_ind, int flags);
 int print_octal_with_flags(va_list args, char buffer[], int *buff_ind, int flags);
 int print_hex_lower_with_flags(va_list args, char buffer[], int *buff_ind, int flags);
