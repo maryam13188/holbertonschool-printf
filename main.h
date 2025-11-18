@@ -12,35 +12,34 @@
 #define FLAG_SPACE  2
 #define FLAG_HASH   4
 
-typedef struct format_info
-{
+typedef struct {
     int flags;
-    int width;
-    int precision;
-    int length;
 } format_info_t;
 
 int _printf(const char *format, ...);
 int process_format(const char *format, va_list args, char buffer[], int *buff_ind);
-int handle_specifier(const char *format, int *i, va_list args, char buffer[], int *buff_ind);
-int parse_flags(const char *format, int *i, format_info_t *info);
+int handle_specifier(const char *format, int *i, va_list args, char buffer[], int *buff_ind, format_info_t info);
+int parse_flags(const char *format, int *i);
 int flush_buffer(char buffer[], int *buff_ind);
 int buffer_char(char c, char buffer[], int *buff_ind);
 int buffer_string(char *str, char buffer[], int *buff_ind);
+int buffer_chars(char c, int count, char buffer[], int *buff_ind);
+
+/* Print functions with format_info */
 int print_char(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_string(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_custom_string(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_pointer(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_percent(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_int(va_list args, char buffer[], int *buff_ind, format_info_t info);
-int print_number(int n, char buffer[], int *buff_ind, format_info_t info);
+int print_number(long n, char buffer[], int *buff_ind, format_info_t info);
 int print_binary(va_list args, char buffer[], int *buff_ind, format_info_t info);
-int print_binary_recursive(unsigned int n, char buffer[], int *buff_ind, format_info_t info);
+int print_binary_recursive(unsigned long n, char buffer[], int *buff_ind, format_info_t info);
 int print_unsigned(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_octal(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_hex_lower(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_hex_upper(va_list args, char buffer[], int *buff_ind, format_info_t info);
-int print_unsigned_number(unsigned int n, unsigned int base, const char *digits, char buffer[], int *buff_ind, format_info_t info);
+int print_unsigned_number(unsigned long n, unsigned int base, const char *digits, char buffer[], int *buff_ind, format_info_t info);
 int print_hex_byte(unsigned char c, char buffer[], int *buff_ind, format_info_t info);
 int print_pointer_address(void *ptr, char buffer[], int *buff_ind, format_info_t info);
 
