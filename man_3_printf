@@ -1,4 +1,4 @@
-.TH _PRINTF 3 "December 2023" "Custom printf" "Linux Programmer's Manual"
+.TH _PRINTF 3 "Nov 2025" "Custom printf" 'sManual"
 .SH NAME
 _printf \- custom formatted output conversion function
 .SH SYNOPSIS
@@ -149,4 +149,4 @@ Buffer handling like the C library printf
 .SH SEE ALSO
 .BR printf (3)
 .SH AUTHORS
-Developed by Holberton School students.
+Developed by Munirahenad , Maryam13188
