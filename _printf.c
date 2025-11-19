@@ -61,6 +61,40 @@ int apply_field_width(char buffer[], int *buff_ind, format_info_t info, int num_
 }
 
 /**
+ * calculate_number_length - calculate the length of a number for field width
+ * @n: the number
+ * @base: base of the number
+ *
+ * Return: number of digits
+ */
+int calculate_number_length(long n, int base)
+{
+    int length = 0;
+    unsigned long num;
+
+    if (n < 0)
+    {
+        length++;
+        num = -n;
+    }
+    else
+    {
+        num = n;
+    }
+
+    if (num == 0)
+        return 1;
+
+    while (num > 0)
+    {
+        length++;
+        num /= base;
+    }
+
+    return (length);
+}
+
+/**
  * handle_specifier - handle format specifiers with field width
  * @format: format string
  * @i: pointer to current index
@@ -76,10 +110,12 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
     format_info_t info = {0, LENGTH_NONE, 0};
     char temp_buffer[BUFFER_SIZE];
     int temp_buff_ind = 0;
-    int j, temp_count;
+    int j, temp_count, num_length;
     char c;
     char *str;
     int str_len;
+    long n;
+    unsigned long un;
 
     (*i)++; /* Skip % */
     
@@ -111,7 +147,7 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
     if (format[*i] == '\0')
         return (-1);
 
-    /* Handle specifiers with proper field width application */
+    /* Handle specifiers */
     if (format[*i] == 'c')
     {
         c = va_arg(args, int);
@@ -155,16 +191,25 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
     }
     else if (format[*i] == 'd' || format[*i] == 'i')
     {
-        /* Use temporary buffer to calculate the number length first */
-        temp_buff_ind = 0;
-        temp_count = print_int(args, temp_buffer, &temp_buff_ind, info);
+        /* Get the number first to calculate its length */
+        if (info.length == LENGTH_L)
+            n = va_arg(args, long);
+        else if (info.length == LENGTH_H)
+            n = (short)va_arg(args, int);
+        else
+            n = va_arg(args, int);
+
+        /* Calculate the number length for field width */
+        num_length = calculate_number_length(n, 10);
         
-        if (info.width > temp_count)
+        if (info.width > num_length)
         {
-            count += apply_field_width(buffer, buff_ind, info, temp_count, 0);
+            count += apply_field_width(buffer, buff_ind, info, num_length, (n < 0));
         }
         
-        /* Copy from temp buffer to main buffer */
+        /* Now print the actual number */
+        temp_buff_ind = 0;
+        temp_count = print_int(args, temp_buffer, &temp_buff_ind, info);
         for (j = 0; j < temp_buff_ind; j++)
         {
             buffer_char(temp_buffer[j], buffer, buff_ind);
@@ -177,15 +222,25 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
     }
     else if (format[*i] == 'u')
     {
-        /* Use temporary buffer for unsigned numbers */
-        temp_buff_ind = 0;
-        temp_count = print_unsigned(args, temp_buffer, &temp_buff_ind, info);
+        /* Get the number first to calculate its length */
+        if (info.length == LENGTH_L)
+            un = va_arg(args, unsigned long);
+        else if (info.length == LENGTH_H)
+            un = (unsigned short)va_arg(args, unsigned int);
+        else
+            un = va_arg(args, unsigned int);
+
+        /* Calculate the number length for field width */
+        num_length = calculate_number_length(un, 10);
         
-        if (info.width > temp_count)
+        if (info.width > num_length)
         {
-            count += apply_field_width(buffer, buff_ind, info, temp_count, 0);
+            count += apply_field_width(buffer, buff_ind, info, num_length, 0);
         }
         
+        /* Print the actual number */
+        temp_buff_ind = 0;
+        temp_count = print_unsigned(args, temp_buffer, &temp_buff_ind, info);
         for (j = 0; j < temp_buff_ind; j++)
         {
             buffer_char(temp_buffer[j], buffer, buff_ind);
@@ -194,7 +249,6 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
     }
     else if (format[*i] == 'o')
     {
-        /* Use temporary buffer for octal numbers */
         temp_buff_ind = 0;
         temp_count = print_octal(args, temp_buffer, &temp_buff_ind, info);
         
@@ -211,7 +265,6 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
     }
     else if (format[*i] == 'x')
     {
-        /* Use temporary buffer for hex numbers */
         temp_buff_ind = 0;
         temp_count = print_hex_lower(args, temp_buffer, &temp_buff_ind, info);
         
@@ -228,7 +281,6 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
     }
     else if (format[*i] == 'X')
     {
-        /* Use temporary buffer for hex numbers */
         temp_buff_ind = 0;
         temp_count = print_hex_upper(args, temp_buffer, &temp_buff_ind, info);
         
