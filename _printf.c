@@ -2,12 +2,6 @@
 
 /**
  * flush_buffer - writes buffer contents to stdout
- * @buffer: character buffer array
- * @buff_ind: pointer to buffer index
- *
- * Return: 0 on success
- *
- * Flushes the buffer content to standard output when called
  */
 int flush_buffer(char buffer[], int *buff_ind)
 {
@@ -20,14 +14,7 @@ int flush_buffer(char buffer[], int *buff_ind)
 }
 
 /**
- * buffer_char - adds a character to buffer, flushes if full
- * @c: character to add to buffer
- * @buffer: character buffer array
- * @buff_ind: pointer to buffer index
- *
- * Return: 1 (number of characters added)
- *
- * Manages buffer writing with automatic flush when buffer is full
+ * buffer_char - adds a character to buffer
  */
 int buffer_char(char c, char buffer[], int *buff_ind)
 {
@@ -40,13 +27,25 @@ int buffer_char(char c, char buffer[], int *buff_ind)
 }
 
 /**
+ * buffer_string - adds a string to buffer
+ */
+int buffer_string(char *str, char buffer[], int *buff_ind)
+{
+    int count = 0;
+
+    if (str == NULL)
+        str = "(null)";
+
+    while (*str)
+    {
+        count += buffer_char(*str, buffer, buff_ind);
+        str++;
+    }
+    return (count);
+}
+
+/**
  * parse_number - parses a number from format string
- * @format: format string being processed
- * @i: pointer to current index in format string
- *
- * Return: parsed integer value
- *
- * Extracts numerical values from format string for width/precision
  */
 int parse_number(const char *format, int *i)
 {
@@ -57,37 +56,25 @@ int parse_number(const char *format, int *i)
         num = num * 10 + (format[*i] - '0');
         (*i)++;
     }
-    (*i)--; /* Adjust for main loop increment */
+    (*i)--;
 
     return (num);
 }
 
 /**
- * handle_specifier - processes format specifiers with modifiers
- * @format: format string
- * @i: pointer to current index in format string
- * @args: variable arguments list
- * @buffer: character buffer
- * @buff_ind: pointer to buffer index
- *
- * Return: number of characters printed for this specifier, -1 on error
- *
- * Handles the complete processing of format specifiers including:
- * - Precision (.number)
- * - Length modifiers (l, h)
- * - Conversion specifiers (c, s, d, i, etc.)
+ * handle_specifier - handle format specifiers
  */
 int handle_specifier(const char *format, int *i, va_list args, char buffer[], int *buff_ind)
 {
     int count = 0;
     format_info_t info = {LENGTH_NONE, -1, 0};
 
-    (*i)++; /* Skip the '%' character */
+    (*i)++;
     
-    if (format[*i] == '\0') /* Handle trailing % */
+    if (format[*i] == '\0')
         return (-1);
 
-    /* Parse precision specification */
+    /* Parse precision */
     if (format[*i] == '.')
     {
         (*i)++;
@@ -100,11 +87,11 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
         }
         else
         {
-            (*i)--; /* Adjust for cases like "%.s" */
+            (*i)--;
         }
     }
 
-    /* Parse length modifiers (l for long, h for short) */
+    /* Parse length modifiers */
     if (format[*i] == 'l')
     {
         info.length = LENGTH_L;
@@ -116,10 +103,10 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
         (*i)++;
     }
 
-    if (format[*i] == '\0') /* Handle incomplete specifier */
+    if (format[*i] == '\0')
         return (-1);
 
-    /* Route to appropriate handler based on conversion specifier */
+    /* Handle specifiers */
     if (format[*i] == 'c')
         count = print_char(args, buffer, buff_ind, info);
     else if (format[*i] == 's')
@@ -142,7 +129,7 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
         count = print_hex_lower(args, buffer, buff_ind, info);
     else if (format[*i] == 'X')
         count = print_hex_upper(args, buffer, buff_ind, info);
-    else /* Handle unknown specifier by printing % and the character */
+    else
     {
         buffer_char('%', buffer, buff_ind);
         buffer_char(format[*i], buffer, buff_ind);
@@ -153,16 +140,7 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
 }
 
 /**
- * _printf - produces formatted output according to format string
- * @format: character string containing zero or more directives
- *
- * Return: number of characters printed (excluding null byte)
- *
- * Custom printf implementation that supports:
- * - Basic conversion specifiers: c, s, %, d, i, u, o, x, X, p, b, S
- * - Precision handling (.number)
- * - Length modifiers: l, h
- * - Buffer management for efficient output
+ * _printf - produces output according to a format
  */
 int _printf(const char *format, ...)
 {
@@ -173,18 +151,17 @@ int _printf(const char *format, ...)
     int i = 0;
     int specifier_count;
 
-    if (format == NULL) /* Handle NULL format string */
+    if (format == NULL)
         return (-1);
 
     va_start(args, format);
 
-    /* Process each character in format string */
     while (format[i])
     {
-        if (format[i] == '%') /* Format specifier found */
+        if (format[i] == '%')
         {
             specifier_count = handle_specifier(format, &i, args, buffer, &buff_ind);
-            if (specifier_count == -1) /* Error in specifier */
+            if (specifier_count == -1)
             {
                 flush_buffer(buffer, &buff_ind);
                 va_end(args);
@@ -192,14 +169,13 @@ int _printf(const char *format, ...)
             }
             count += specifier_count;
         }
-        else /* Regular character */
+        else
         {
             count += buffer_char(format[i], buffer, &buff_ind);
         }
         i++;
     }
 
-    /* Flush any remaining characters in buffer */
     flush_buffer(buffer, &buff_ind);
     va_end(args);
 
