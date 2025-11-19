@@ -17,9 +17,7 @@ This project is a custom implementation of the printf function in C, developed a
 •	Functions per file: Maximum 5 functions
 •	Header file: main.h with include guards
 •	File endings: All files must end with a new line
-`` 
-# Authorized Functions and Macros
-``
+
 ## Authorized Functions and Macros
 
 - `write` (man 2 write)
