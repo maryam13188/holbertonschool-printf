@@ -48,6 +48,8 @@ A comprehensive manual page documenting the entire _printf project is available:
 bash
 man ./man_3_printf_project
 ``
+## Flowcharts
+<img width="248" height="287" alt="Picture1" src="https://github.com/user-attachments/assets/77d1b3e7-974c-43e7-968f-6ed5101aba7a" />
 ## Future Enhancements
 
 ### Potential Extensions
@@ -61,6 +63,7 @@ man ./man_3_printf_project
 
 # The Real Challenge
 This project pushes me beyond just writing code - it's about thinking through edge cases, understanding system calls, and building something that actually works reliably. It's one thing to use printf, but building it from scratch? That's where the real learning happens.
+
 
 
 
