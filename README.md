@@ -50,6 +50,8 @@ man ./man_3_printf_project
 ``
 ## Flowcharts
 <img width="248" height="287" alt="Picture1" src="https://github.com/user-attachments/assets/77d1b3e7-974c-43e7-968f-6ed5101aba7a" />
+
+
 ## Future Enhancements
 
 ### Potential Extensions
