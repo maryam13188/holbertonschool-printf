@@ -25,11 +25,11 @@ This project is a custom implementation of the printf function in C, developed a
 - `va_end` (man 3 va_end)
 - `va_copy` (man 3 va_copy)
 - `va_arg` (man 3 va_arg)
-# Task 0: I'm not going anywhere. You can print that wherever you want to. I'm here and I'm a Spur for life
-Format specifiers handled:
-•	c - characters
-•	s - strings
-•	% - percent symbol
+### Task 0: I'm not going anywhere. You can print that wherever you want to. I'm here and I'm a Spur for life
+**Format specifiers handled:**
+- `c` - characters
+- `s` - strings  
+- `%` - percent symbol
 # Task 1: Education is when you read the fine print. Experience is what you get if you don't
 Mandatory
 Handle the following conversion specifiers:
