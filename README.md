@@ -39,24 +39,12 @@ Mandatory
 Handle the following conversion specifiers:
 •	d - signed decimal integers
 •	i - signed integers
-# Expected Output
-Let's try to printf a simple sentence.
-Let's try to printf a simple sentence.
-Character:[H]
-Character:[H]
-String:[I am a string !]
-String:[I am a string !]
-Percent:[%]
-Percent:[%]
-Length:[39, 39]
-Length:[39, 39]
-Negative:[-762534]
-Negative:[-762534]
-Edge Cases Handled
-•	Unknown specifiers: Print the '%' and the following character as is
-•	NULL strings: Handle NULL pointers gracefully
-•	Empty format string: Return 0 characters printed
-•	Format string ending with %: Handle appropriately
+## Edge Cases Handled
+
+- **Unknown specifiers:** Print the '%' and the following character as is
+- **NULL strings:** Handle NULL pointers gracefully  
+- **Empty format string:** Return 0 characters printed
+- **Format string ending with %:** Handle appropriately
 
 ## Documentation
 A comprehensive manual page documenting the entire _printf project is available:
