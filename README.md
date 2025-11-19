@@ -1,7 +1,7 @@
 # _printf Project
 ## Description
 This project is a custom implementation of the printf function in C, developed as part of the Holberton School curriculum. The goal is to recreate the core functionality of the standard printf function from the C library, handling various format specifiers and producing output according to the given format string.
-General
+### General
 •	Allowed editors: vi, vim, emacs
 •	Code style: Betty style (checked with betty-style.pl and betty-doc.pl)
 •	Global variables: Not allowed
