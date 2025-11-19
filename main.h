@@ -49,11 +49,12 @@ int print_hex_upper(va_list args, char buffer[], int *buff_ind, format_info_t in
 int print_unsigned_number(unsigned long n, unsigned int base, const char *digits, char buffer[], int *buff_ind, format_info_t info);
 
 /* Field width functions */
-int apply_field_width(char buffer[], int *buff_ind, format_info_t info, int num_chars, int is_negative);
+int apply_field_width(char buffer[], int *buff_ind, int width, int num_chars);
 int parse_width(const char *format, int *i, va_list args);
 int calculate_number_length(long n, int base);
 
 /* Helper functions */
+int parse_flags(const char *format, int *i, format_info_t *info);
 int handle_specifier(const char *format, int *i, va_list args, char buffer[], int *buff_ind);
 
 #endif /* MAIN_H */
