@@ -30,11 +30,11 @@ This project is a custom implementation of the printf function in C, developed a
 - `c` - characters
 - `s` - strings  
 - `%` - percent symbol
-# Task 1: Education is when you read the fine print. Experience is what you get if you don't
-Mandatory
-Handle the following conversion specifiers:
-•	d - signed decimal integers
-•	i - signed integers
+### Task 1: Education is when you read the fine print. Experience is what you get if you don't
+
+**Mandatory** - Handle the following conversion specifiers:
+- `d` - signed decimal integers
+- `i` - signed integers
 ## Edge Cases Handled
 
 - **Unknown specifiers:** Print the '%' and the following character as is
