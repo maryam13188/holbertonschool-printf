@@ -51,6 +51,7 @@ int print_unsigned_number(unsigned long n, unsigned int base, const char *digits
 /* Field width functions */
 int apply_field_width(char buffer[], int *buff_ind, format_info_t info, int num_chars, int is_negative);
 int parse_width(const char *format, int *i, va_list args);
+int calculate_number_length(long n, int base);
 
 /* Helper functions */
 int handle_specifier(const char *format, int *i, va_list args, char buffer[], int *buff_ind);
