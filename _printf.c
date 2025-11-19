@@ -1,30 +1,7 @@
 #include "main.h"
 
 /**
- * parse_width - parse field width from format string
- * @format: format string
- * @i: pointer to current index
- * @args: variable arguments list
- *
- * Return: field width value
- */
-int parse_width(const char *format, int *i, va_list args)
-{
-    int width = 0;
-    int j = *i;
-
-    while (format[j] >= '0' && format[j] <= '9')
-    {
-        width = width * 10 + (format[j] - '0');
-        j++;
-    }
-
-    *i = j - 1;
-    return (width);
-}
-
-/**
- * handle_specifier - handle format specifiers (BASIC + FIELD WIDTH)
+ * handle_specifier - handle format specifiers with length modifiers
  * @format: format string
  * @i: pointer to current index
  * @args: variable arguments list
@@ -36,72 +13,53 @@ int parse_width(const char *format, int *i, va_list args)
 int handle_specifier(const char *format, int *i, va_list args, char buffer[], int *buff_ind)
 {
     int count = 0;
-    int width = 0;
+    format_info_t info = {0, LENGTH_NONE};
 
     (*i)++; /* Skip % */
     
     if (format[*i] == '\0')
         return (-1);
 
-    /* Parse field width - SIMPLE */
-    if (format[*i] >= '0' && format[*i] <= '9')
+    /* Parse length modifiers - Task 9 */
+    if (format[*i] == 'l')
     {
-        width = parse_width(format, i, args);
+        info.length = LENGTH_L;
+        (*i)++;
+    }
+    else if (format[*i] == 'h')
+    {
+        info.length = LENGTH_H;
+        (*i)++;
     }
 
     if (format[*i] == '\0')
         return (-1);
 
-    /* Handle specifiers - BASIC */
+    /* Handle specifiers */
     if (format[*i] == 'c')
-    {
-        char c = va_arg(args, int);
-        count += buffer_char(c, buffer, buff_ind);
-    }
+        count = print_char(args, buffer, buff_ind, info);
     else if (format[*i] == 's')
-    {
-        char *str = va_arg(args, char *);
-        count += buffer_string(str, buffer, buff_ind);
-    }
+        count = print_string(args, buffer, buff_ind, info);
     else if (format[*i] == 'S')
-    {
-        count = print_custom_string(args, buffer, buff_ind, (format_info_t){0, LENGTH_NONE, 0});
-    }
+        count = print_custom_string(args, buffer, buff_ind, info);
     else if (format[*i] == 'p')
-    {
-        count = print_pointer(args, buffer, buff_ind, (format_info_t){0, LENGTH_NONE, 0});
-    }
+        count = print_pointer(args, buffer, buff_ind, info);
     else if (format[*i] == '%')
-    {
-        count += buffer_char('%', buffer, buff_ind);
-    }
+        count = print_percent(args, buffer, buff_ind, info);
     else if (format[*i] == 'd' || format[*i] == 'i')
-    {
-        count = print_int(args, buffer, buff_ind, (format_info_t){0, LENGTH_NONE, 0});
-    }
+        count = print_int(args, buffer, buff_ind, info);
     else if (format[*i] == 'b')
-    {
-        count = print_binary(args, buffer, buff_ind, (format_info_t){0, LENGTH_NONE, 0});
-    }
+        count = print_binary(args, buffer, buff_ind, info);
     else if (format[*i] == 'u')
-    {
-        count = print_unsigned(args, buffer, buff_ind, (format_info_t){0, LENGTH_NONE, 0});
-    }
+        count = print_unsigned(args, buffer, buff_ind, info);
     else if (format[*i] == 'o')
-    {
-        count = print_octal(args, buffer, buff_ind, (format_info_t){0, LENGTH_NONE, 0});
-    }
+        count = print_octal(args, buffer, buff_ind, info);
     else if (format[*i] == 'x')
-    {
-        count = print_hex_lower(args, buffer, buff_ind, (format_info_t){0, LENGTH_NONE, 0});
-    }
+        count = print_hex_lower(args, buffer, buff_ind, info);
     else if (format[*i] == 'X')
-    {
-        count = print_hex_upper(args, buffer, buff_ind, (format_info_t){0, LENGTH_NONE, 0});
-    }
+        count = print_hex_upper(args, buffer, buff_ind, info);
     else
     {
-        /* Unknown specifier - print as is */
         buffer_char('%', buffer, buff_ind);
         buffer_char(format[*i], buffer, buff_ind);
         count = 2;
