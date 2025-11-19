@@ -21,7 +21,6 @@ typedef struct format_info
 {
     int flags;
     int length;
-    int width;
 } format_info_t;
 
 /* Main printf function */
@@ -41,20 +40,14 @@ int print_percent(va_list args, char buffer[], int *buff_ind, format_info_t info
 int print_int(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_number(long n, char buffer[], int *buff_ind, format_info_t info);
 int print_binary(va_list args, char buffer[], int *buff_ind, format_info_t info);
-int print_binary_recursive(unsigned int n, char buffer[], int *buff_ind, format_info_t info);
+int print_binary_recursive(unsigned int n, char buffer[], int *buff_ind, format_info_t info); /* Added prototype */
 int print_unsigned(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_octal(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_hex_lower(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_hex_upper(va_list args, char buffer[], int *buff_ind, format_info_t info);
 int print_unsigned_number(unsigned long n, unsigned int base, const char *digits, char buffer[], int *buff_ind, format_info_t info);
 
-/* Field width functions */
-int apply_field_width(char buffer[], int *buff_ind, int width, int num_chars);
-int parse_width(const char *format, int *i, va_list args);
-int calculate_number_length(long n, int base);
-
 /* Helper functions */
-int parse_flags(const char *format, int *i, format_info_t *info);
 int handle_specifier(const char *format, int *i, va_list args, char buffer[], int *buff_ind);
 
 #endif /* MAIN_H */
