@@ -71,8 +71,10 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
 {
     int count = 0;
     format_info_t info = {0, LENGTH_NONE, 0};
+    int start_index = *i;
+    int has_specifier = 0;
     char temp_buffer[BUFFER_SIZE];
-    int temp_buff_ind = 0;
+    int temp_buff_ind;
     int j, temp_count, str_len;
     char c;
     char *str;
@@ -82,7 +84,7 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
     if (format[*i] == '\0')
         return (-1);
 
-    /* Parse field width */
+    /* CORRECT ORDER: Parse field width FIRST */
     if (format[*i] == '*' || (format[*i] >= '0' && format[*i] <= '9'))
     {
         info.width = parse_width(format, i, args);
@@ -103,138 +105,157 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
     if (format[*i] == '\0')
         return (-1);
 
-    /* Handle specifiers with field width */
-    if (format[*i] == 'c')
+    /* Handle specifiers - SIMPLIFIED AND DIRECT */
+    switch (format[*i])
     {
-        c = va_arg(args, int);
-        if (info.width > 1)
-        {
-            count += apply_field_width(buffer, buff_ind, info.width, 1);
-        }
-        count += buffer_char(c, buffer, buff_ind);
-    }
-    else if (format[*i] == 's')
-    {
-        str = va_arg(args, char *);
-        if (str == NULL)
-            str = "(null)";
-        
-        str_len = 0;
-        while (str[str_len])
-            str_len++;
+        case 'c':
+            c = va_arg(args, int);
+            if (info.width > 1)
+            {
+                count += apply_field_width(buffer, buff_ind, info.width, 1);
+            }
+            count += buffer_char(c, buffer, buff_ind);
+            has_specifier = 1;
+            break;
+
+        case 's':
+            str = va_arg(args, char *);
+            if (str == NULL)
+                str = "(null)";
             
-        if (info.width > str_len)
-        {
-            count += apply_field_width(buffer, buff_ind, info.width, str_len);
-        }
-        count += buffer_string(str, buffer, buff_ind);
+            str_len = 0;
+            while (str[str_len])
+                str_len++;
+                
+            if (info.width > str_len)
+            {
+                count += apply_field_width(buffer, buff_ind, info.width, str_len);
+            }
+            count += buffer_string(str, buffer, buff_ind);
+            has_specifier = 1;
+            break;
+
+        case 'S':
+            count = print_custom_string(args, buffer, buff_ind, info);
+            has_specifier = 1;
+            break;
+
+        case 'p':
+            count = print_pointer(args, buffer, buff_ind, info);
+            has_specifier = 1;
+            break;
+
+        case '%':
+            if (info.width > 1)
+            {
+                count += apply_field_width(buffer, buff_ind, info.width, 1);
+            }
+            count += buffer_char('%', buffer, buff_ind);
+            has_specifier = 1;
+            break;
+
+        case 'd':
+        case 'i':
+            temp_buff_ind = 0;
+            temp_count = print_int(args, temp_buffer, &temp_buff_ind, info);
+            
+            if (info.width > temp_count)
+            {
+                count += apply_field_width(buffer, buff_ind, info.width, temp_count);
+            }
+            
+            for (j = 0; j < temp_buff_ind; j++)
+            {
+                buffer_char(temp_buffer[j], buffer, buff_ind);
+            }
+            count += temp_count;
+            has_specifier = 1;
+            break;
+
+        case 'b':
+            count = print_binary(args, buffer, buff_ind, info);
+            has_specifier = 1;
+            break;
+
+        case 'u':
+            temp_buff_ind = 0;
+            temp_count = print_unsigned(args, temp_buffer, &temp_buff_ind, info);
+            
+            if (info.width > temp_count)
+            {
+                count += apply_field_width(buffer, buff_ind, info.width, temp_count);
+            }
+            
+            for (j = 0; j < temp_buff_ind; j++)
+            {
+                buffer_char(temp_buffer[j], buffer, buff_ind);
+            }
+            count += temp_count;
+            has_specifier = 1;
+            break;
+
+        case 'o':
+            temp_buff_ind = 0;
+            temp_count = print_octal(args, temp_buffer, &temp_buff_ind, info);
+            
+            if (info.width > temp_count)
+            {
+                count += apply_field_width(buffer, buff_ind, info.width, temp_count);
+            }
+            
+            for (j = 0; j < temp_buff_ind; j++)
+            {
+                buffer_char(temp_buffer[j], buffer, buff_ind);
+            }
+            count += temp_count;
+            has_specifier = 1;
+            break;
+
+        case 'x':
+            temp_buff_ind = 0;
+            temp_count = print_hex_lower(args, temp_buffer, &temp_buff_ind, info);
+            
+            if (info.width > temp_count)
+            {
+                count += apply_field_width(buffer, buff_ind, info.width, temp_count);
+            }
+            
+            for (j = 0; j < temp_buff_ind; j++)
+            {
+                buffer_char(temp_buffer[j], buffer, buff_ind);
+            }
+            count += temp_count;
+            has_specifier = 1;
+            break;
+
+        case 'X':
+            temp_buff_ind = 0;
+            temp_count = print_hex_upper(args, temp_buffer, &temp_buff_ind, info);
+            
+            if (info.width > temp_count)
+            {
+                count += apply_field_width(buffer, buff_ind, info.width, temp_count);
+            }
+            
+            for (j = 0; j < temp_buff_ind; j++)
+            {
+                buffer_char(temp_buffer[j], buffer, buff_ind);
+            }
+            count += temp_count;
+            has_specifier = 1;
+            break;
     }
-    else if (format[*i] == 'S')
+
+    /* 🔥 CRITICAL FIX: If no specifier found, check if we have width + unknown specifier */
+    if (!has_specifier)
     {
-        count = print_custom_string(args, buffer, buff_ind, info);
-    }
-    else if (format[*i] == 'p')
-    {
-        count = print_pointer(args, buffer, buff_ind, info);
-    }
-    else if (format[*i] == '%')
-    {
-        if (info.width > 1)
+        /* If we parsed width but no valid specifier, print everything as-is */
+        int k;
+        for (k = start_index; k <= *i; k++)
         {
-            count += apply_field_width(buffer, buff_ind, info.width, 1);
+            buffer_char(format[k], buffer, buff_ind);
+            count++;
         }
-        count += buffer_char('%', buffer, buff_ind);
-    }
-    else if (format[*i] == 'd' || format[*i] == 'i')
-    {
-        /* Use temporary buffer for numbers */
-        temp_buff_ind = 0;
-        temp_count = print_int(args, temp_buffer, &temp_buff_ind, info);
-        
-        if (info.width > temp_count)
-        {
-            count += apply_field_width(buffer, buff_ind, info.width, temp_count);
-        }
-        
-        for (j = 0; j < temp_buff_ind; j++)
-        {
-            buffer_char(temp_buffer[j], buffer, buff_ind);
-        }
-        count += temp_count;
-    }
-    else if (format[*i] == 'b')
-    {
-        count = print_binary(args, buffer, buff_ind, info);
-    }
-    else if (format[*i] == 'u')
-    {
-        temp_buff_ind = 0;
-        temp_count = print_unsigned(args, temp_buffer, &temp_buff_ind, info);
-        
-        if (info.width > temp_count)
-        {
-            count += apply_field_width(buffer, buff_ind, info.width, temp_count);
-        }
-        
-        for (j = 0; j < temp_buff_ind; j++)
-        {
-            buffer_char(temp_buffer[j], buffer, buff_ind);
-        }
-        count += temp_count;
-    }
-    else if (format[*i] == 'o')
-    {
-        temp_buff_ind = 0;
-        temp_count = print_octal(args, temp_buffer, &temp_buff_ind, info);
-        
-        if (info.width > temp_count)
-        {
-            count += apply_field_width(buffer, buff_ind, info.width, temp_count);
-        }
-        
-        for (j = 0; j < temp_buff_ind; j++)
-        {
-            buffer_char(temp_buffer[j], buffer, buff_ind);
-        }
-        count += temp_count;
-    }
-    else if (format[*i] == 'x')
-    {
-        temp_buff_ind = 0;
-        temp_count = print_hex_lower(args, temp_buffer, &temp_buff_ind, info);
-        
-        if (info.width > temp_count)
-        {
-            count += apply_field_width(buffer, buff_ind, info.width, temp_count);
-        }
-        
-        for (j = 0; j < temp_buff_ind; j++)
-        {
-            buffer_char(temp_buffer[j], buffer, buff_ind);
-        }
-        count += temp_count;
-    }
-    else if (format[*i] == 'X')
-    {
-        temp_buff_ind = 0;
-        temp_count = print_hex_upper(args, temp_buffer, &temp_buff_ind, info);
-        
-        if (info.width > temp_count)
-        {
-            count += apply_field_width(buffer, buff_ind, info.width, temp_count);
-        }
-        
-        for (j = 0; j < temp_buff_ind; j++)
-        {
-            buffer_char(temp_buffer[j], buffer, buff_ind);
-        }
-        count += temp_count;
-    }
-    else
-    {
-        buffer_char('%', buffer, buff_ind);
-        buffer_char(format[*i], buffer, buff_ind);
-        count = 2;
     }
 
     return (count);
