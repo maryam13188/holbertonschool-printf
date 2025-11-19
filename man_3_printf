@@ -1,4 +1,10 @@
-.TH _PRINTF 3 "Nov 2025" "Custom printf" 'sManual"
+.TH _PRINTF 3 "Nov 2025" "Custom printf" 'Manual"
+
+_printf() is a simplified version of printf(). It reads a format string,
+parses conversion specifiers using flowchart-based logic, and prints the
+result to stdout. It supports basic format specifiers only and is built to
+practice variadic functions and group project collaboration.
+
 .SH NAME
 _printf \- custom formatted output conversion function
 .SH SYNOPSIS
