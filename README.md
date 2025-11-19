@@ -9,15 +9,13 @@ This project is a custom implementation of the printf function in C, developed a
 | main.h | Header file containing function prototypes and standard library includes (<stdarg.h>, <unistd.h>, <string.h>) |
 | man_3_printf | Custom manual page documenting the function's usage, synopsis, and examples |
 
-### General
-``
-•	Allowed editors: vi, vim, emacs
-•	Code style: Betty style (checked with betty-style.pl and betty-doc.pl)
-•	Global variables: Not allowed
-•	Functions per file: Maximum 5 functions
-•	Header file: main.h with include guards
-•	File endings: All files must end with a new line
-
+## General
+- **Allowed editors:** vi, vim, emacs
+- **Code style:** Betty style (checked with betty-style.pl and betty-doc.pl)
+- **Global variables:** Not allowed
+- **Functions per file:** Maximum 5 functions
+- **Header file:** main.h with include guards
+- **File endings:** All files must end with a new line
 ## Authorized Functions and Macros
 
 - `write` (man 2 write)
