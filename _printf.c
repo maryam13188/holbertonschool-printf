@@ -67,12 +67,19 @@ int parse_number(const char *format, int *i)
 int handle_specifier(const char *format, int *i, va_list args, char buffer[], int *buff_ind)
 {
     int count = 0;
-    format_info_t info = {LENGTH_NONE, -1, 0};
+    format_info_t info = {LENGTH_NONE, -1, 0, 0, 0};
 
     (*i)++;
     
     if (format[*i] == '\0')
         return (-1);
+
+    /* Parse field width */
+    if (format[*i] >= '0' && format[*i] <= '9')
+    {
+        info.has_width = 1;
+        info.width = parse_number(format, i);
+    }
 
     /* Parse precision */
     if (format[*i] == '.')
