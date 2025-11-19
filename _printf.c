@@ -1,6 +1,35 @@
 #include "main.h"
 
 /**
+ * parse_flags - parse flag characters
+ * @format: format string
+ * @i: pointer to current index
+ * @info: pointer to format info
+ *
+ * Return: number of flags parsed
+ */
+int parse_flags(const char *format, int *i, format_info_t *info)
+{
+    int count = 0;
+    int j = *i;
+
+    while (format[j] == '+' || format[j] == ' ' || format[j] == '#')
+    {
+        if (format[j] == '+')
+            info->flags |= FLAG_PLUS;
+        else if (format[j] == ' ')
+            info->flags |= FLAG_SPACE;
+        else if (format[j] == '#')
+            info->flags |= FLAG_HASH;
+        j++;
+        count++;
+    }
+
+    *i = j - 1;
+    return (count);
+}
+
+/**
  * parse_width - parse field width from format string
  * @format: format string
  * @i: pointer to current index
@@ -34,23 +63,20 @@ int parse_width(const char *format, int *i, va_list args)
  * apply_field_width - apply field width padding
  * @buffer: character buffer
  * @buff_ind: pointer to buffer index
- * @info: format information
+ * @width: field width
  * @num_chars: number of characters in the output
- * @is_negative: whether the number is negative
  *
  * Return: number of padding characters added
  */
-int apply_field_width(char buffer[], int *buff_ind, format_info_t info, int num_chars, int is_negative)
+int apply_field_width(char buffer[], int *buff_ind, int width, int num_chars)
 {
     int padding = 0;
     int i;
 
-    (void)is_negative;
-
-    if (info.width <= num_chars)
+    if (width <= num_chars)
         return (0);
 
-    padding = info.width - num_chars;
+    padding = width - num_chars;
 
     for (i = 0; i < padding; i++)
     {
@@ -61,41 +87,7 @@ int apply_field_width(char buffer[], int *buff_ind, format_info_t info, int num_
 }
 
 /**
- * calculate_number_length - calculate the length of a number for field width
- * @n: the number
- * @base: base of the number
- *
- * Return: number of digits
- */
-int calculate_number_length(long n, int base)
-{
-    int length = 0;
-    unsigned long num;
-
-    if (n < 0)
-    {
-        length++;
-        num = -n;
-    }
-    else
-    {
-        num = n;
-    }
-
-    if (num == 0)
-        return 1;
-
-    while (num > 0)
-    {
-        length++;
-        num /= base;
-    }
-
-    return (length);
-}
-
-/**
- * handle_specifier - handle format specifiers with field width
+ * handle_specifier - handle format specifiers
  * @format: format string
  * @i: pointer to current index
  * @args: variable arguments list
@@ -108,19 +100,16 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
 {
     int count = 0;
     format_info_t info = {0, LENGTH_NONE, 0};
-    char temp_buffer[BUFFER_SIZE];
-    int temp_buff_ind = 0;
-    int j, temp_count, num_length;
-    char c;
-    char *str;
-    int str_len;
-    long n;
-    unsigned long un;
+    int start_index = *i;
+    int has_specifier = 0;
 
     (*i)++; /* Skip % */
     
     if (format[*i] == '\0')
         return (-1);
+
+    /* Parse flags */
+    parse_flags(format, i, &info);
 
     /* Parse field width */
     if (format[*i] == '*')
@@ -148,159 +137,64 @@ int handle_specifier(const char *format, int *i, va_list args, char buffer[], in
         return (-1);
 
     /* Handle specifiers */
-    if (format[*i] == 'c')
+    switch (format[*i])
     {
-        c = va_arg(args, int);
-        if (info.width > 1)
-        {
-            count += apply_field_width(buffer, buff_ind, info, 1, 0);
-        }
-        count += buffer_char(c, buffer, buff_ind);
+        case 'c':
+            count = print_char(args, buffer, buff_ind, info);
+            has_specifier = 1;
+            break;
+        case 's':
+            count = print_string(args, buffer, buff_ind, info);
+            has_specifier = 1;
+            break;
+        case 'S':
+            count = print_custom_string(args, buffer, buff_ind, info);
+            has_specifier = 1;
+            break;
+        case 'p':
+            count = print_pointer(args, buffer, buff_ind, info);
+            has_specifier = 1;
+            break;
+        case '%':
+            count = print_percent(args, buffer, buff_ind, info);
+            has_specifier = 1;
+            break;
+        case 'd':
+        case 'i':
+            count = print_int(args, buffer, buff_ind, info);
+            has_specifier = 1;
+            break;
+        case 'b':
+            count = print_binary(args, buffer, buff_ind, info);
+            has_specifier = 1;
+            break;
+        case 'u':
+            count = print_unsigned(args, buffer, buff_ind, info);
+            has_specifier = 1;
+            break;
+        case 'o':
+            count = print_octal(args, buffer, buff_ind, info);
+            has_specifier = 1;
+            break;
+        case 'x':
+            count = print_hex_lower(args, buffer, buff_ind, info);
+            has_specifier = 1;
+            break;
+        case 'X':
+            count = print_hex_upper(args, buffer, buff_ind, info);
+            has_specifier = 1;
+            break;
     }
-    else if (format[*i] == 's')
-    {
-        str = va_arg(args, char *);
-        if (str == NULL)
-            str = "(null)";
-        
-        str_len = 0;
-        while (str[str_len])
-            str_len++;
-            
-        if (info.width > str_len)
-        {
-            count += apply_field_width(buffer, buff_ind, info, str_len, 0);
-        }
-        count += buffer_string(str, buffer, buff_ind);
-    }
-    else if (format[*i] == 'S')
-    {
-        count = print_custom_string(args, buffer, buff_ind, info);
-    }
-    else if (format[*i] == 'p')
-    {
-        count = print_pointer(args, buffer, buff_ind, info);
-    }
-    else if (format[*i] == '%')
-    {
-        if (info.width > 1)
-        {
-            count += apply_field_width(buffer, buff_ind, info, 1, 0);
-        }
-        count += buffer_char('%', buffer, buff_ind);
-    }
-    else if (format[*i] == 'd' || format[*i] == 'i')
-    {
-        /* Get the number first to calculate its length */
-        if (info.length == LENGTH_L)
-            n = va_arg(args, long);
-        else if (info.length == LENGTH_H)
-            n = (short)va_arg(args, int);
-        else
-            n = va_arg(args, int);
 
-        /* Calculate the number length for field width */
-        num_length = calculate_number_length(n, 10);
-        
-        if (info.width > num_length)
-        {
-            count += apply_field_width(buffer, buff_ind, info, num_length, (n < 0));
-        }
-        
-        /* Now print the actual number */
-        temp_buff_ind = 0;
-        temp_count = print_int(args, temp_buffer, &temp_buff_ind, info);
-        for (j = 0; j < temp_buff_ind; j++)
-        {
-            buffer_char(temp_buffer[j], buffer, buff_ind);
-        }
-        count += temp_count;
-    }
-    else if (format[*i] == 'b')
-    {
-        count = print_binary(args, buffer, buff_ind, info);
-    }
-    else if (format[*i] == 'u')
-    {
-        /* Get the number first to calculate its length */
-        if (info.length == LENGTH_L)
-            un = va_arg(args, unsigned long);
-        else if (info.length == LENGTH_H)
-            un = (unsigned short)va_arg(args, unsigned int);
-        else
-            un = va_arg(args, unsigned int);
-
-        /* Calculate the number length for field width */
-        num_length = calculate_number_length(un, 10);
-        
-        if (info.width > num_length)
-        {
-            count += apply_field_width(buffer, buff_ind, info, num_length, 0);
-        }
-        
-        /* Print the actual number */
-        temp_buff_ind = 0;
-        temp_count = print_unsigned(args, temp_buffer, &temp_buff_ind, info);
-        for (j = 0; j < temp_buff_ind; j++)
-        {
-            buffer_char(temp_buffer[j], buffer, buff_ind);
-        }
-        count += temp_count;
-    }
-    else if (format[*i] == 'o')
-    {
-        temp_buff_ind = 0;
-        temp_count = print_octal(args, temp_buffer, &temp_buff_ind, info);
-        
-        if (info.width > temp_count)
-        {
-            count += apply_field_width(buffer, buff_ind, info, temp_count, 0);
-        }
-        
-        for (j = 0; j < temp_buff_ind; j++)
-        {
-            buffer_char(temp_buffer[j], buffer, buff_ind);
-        }
-        count += temp_count;
-    }
-    else if (format[*i] == 'x')
-    {
-        temp_buff_ind = 0;
-        temp_count = print_hex_lower(args, temp_buffer, &temp_buff_ind, info);
-        
-        if (info.width > temp_count)
-        {
-            count += apply_field_width(buffer, buff_ind, info, temp_count, 0);
-        }
-        
-        for (j = 0; j < temp_buff_ind; j++)
-        {
-            buffer_char(temp_buffer[j], buffer, buff_ind);
-        }
-        count += temp_count;
-    }
-    else if (format[*i] == 'X')
-    {
-        temp_buff_ind = 0;
-        temp_count = print_hex_upper(args, temp_buffer, &temp_buff_ind, info);
-        
-        if (info.width > temp_count)
-        {
-            count += apply_field_width(buffer, buff_ind, info, temp_count, 0);
-        }
-        
-        for (j = 0; j < temp_buff_ind; j++)
-        {
-            buffer_char(temp_buffer[j], buffer, buff_ind);
-        }
-        count += temp_count;
-    }
-    else
+    if (!has_specifier)
     {
         /* Unknown specifier - print as is */
-        buffer_char('%', buffer, buff_ind);
-        buffer_char(format[*i], buffer, buff_ind);
-        count = 2;
+        int k;
+        for (k = start_index; k <= *i; k++)
+        {
+            buffer_char(format[k], buffer, buff_ind);
+            count++;
+        }
     }
 
     return (count);
