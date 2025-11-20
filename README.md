@@ -1,7 +1,17 @@
-# _printf Project
-# _printf - Custom printf Implementation
+
+# _printf Project - Custom printf Implementation
 ## Description
 This project is a custom implementation of the printf function in C, developed as part of the Holberton School curriculum. The goal is to recreate the core functionality of the standard printf function from the C library, handling various format specifiers and producing output according to the given format string.
+
+## Project Structure
+```
+printf/
+├── main.h
+├── _printf.c
+├── functions.c
+├── man_3_printf
+└── README.md
+```
 
 | File | Description |
 |------|-------------|
