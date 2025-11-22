@@ -63,12 +63,12 @@ man ./man_3_printf_project
 ```
 ## Future Enhancements
 ### Potential Extensions
-- **Additional format specifiers:** `%u`, `%o`, `%x`, `%X`, `%p`
-- **Flag character implementation:** `+`, `-`, `0`, `#`, space
-- **Field width and precision specifications**
-- **Length modifiers support:** `h`, `l`, `L`
-- **Custom specifier extensions**
-- **Buffer optimization for performance** 
+**Additional format specifiers:** `%u`, `%o`, `%x`, `%X`, `%p`
+**Flag character implementation:** `+`, `-`, `0`, `#`, space
+**Field width and precision specifications**
+**Length modifiers support:** `h`, `l`, `L`
+**Custom specifier extensions**
+**Buffer optimization for performance** 
 
 
 
