@@ -52,24 +52,20 @@ printf/
 - **NULL strings:** Handle NULL pointers gracefully  
 - **Empty format string:** Return 0 characters printed
 - **Format string ending with %:** Handle appropriately
-## Usage Examples
-```c
-#include "main.h"
 
-int main(void)
-{
-    _printf("Hello, %s!\n", "World");
-    _printf("Character: %c\n", 'A');
-    _printf("Percent: %%\n");
-    _printf("Integer: %d\n", 42);
-    return (0);
-}
-
-
-Manual Page
+## Manual Page
 A comprehensive manual page is available for the entire _printf project:
 
 man ./man_3_printf_project
+
+## Future Enhancements
+### Potential Extensions
+- *Additional format specifiers:* %u, %o, %x, %X, %p
+- *Flag character implementation:* +, -, 0, #, space
+- *Field width and precision specifications*
+- *Length modifiers support:* h, l, L
+- *Custom specifier extensions*
+
 
 
 
