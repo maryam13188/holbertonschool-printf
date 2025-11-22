@@ -61,6 +61,7 @@ A comprehensive manual page is available for the entire _printf project:
 ```bash
 man ./man_3_printf_project
 ```
+
 ## Future Enhancements
 
 ### Format Specifiers
@@ -71,20 +72,22 @@ man ./man_3_printf_project
 - `%p` - Pointer address
 
 ### Flag Characters
-`+` Plus sign
-`-` Minus sign
-`0` Zero padding
-`#` Hash
+- `+` - Plus sign
+- `-` - Minus sign
+- `0` - Zero padding
+- `#` - Hash
 
 ### Length Modifiers
-`h`Short
-`l`Long
-`L`Long long
+- `h` - Short
+- `l` - Long
+- `L` - Long long
+
 ### Advanced Features
 - Field width specifications
 - Precision specifications  
 - Custom specifier extensions
 - Buffer optimization
+
 
 
 
