@@ -64,16 +64,14 @@ int main(void)
     _printf("Integer: %d\n", 42);
     return (0);
 }
-
-
 ## Documentation
-A comprehensive manual page documenting the entire _printf project is available:
+A comprehensive manual page documenting the entire _printf project is available.
 
 *Run the manual page using:*
 ```bash
-man ./man_3_printf_project
-## Flowcharts
-<img width="248" height="287" alt="Picture1" src="https://github.com/user-attachments/assets/77d1b3e7-974c-43e7-968f-6ed5101aba7a" />
+man ./man_3_printf
+## Flowchart 
+https://github.com/user-attachments/assets/77d1b3e7-974c-43e7-968f-6ed5101aba7a
 
 ## Future Enhancements
 ### Potential Extensions
