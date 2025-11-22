@@ -52,7 +52,6 @@ printf/
 - **NULL strings:** Handle NULL pointers gracefully  
 - **Empty format string:** Return 0 characters printed
 - **Format string ending with %:** Handle appropriately
-  
 ## Usage Examples
 ```c
 #include "main.h"
