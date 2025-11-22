@@ -52,28 +52,23 @@ printf/
 - **NULL strings:** Handle NULL pointers gracefully  
 - **Empty format string:** Return 0 characters printed
 - **Format string ending with %:** Handle appropriately
-
 ## Manual Page
 A comprehensive manual page is available for the entire _printf project:
 
-man ./man_3_printf_project
+<div align="center" style="background-color: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196f3; margin: 10px 0;">
 
+**Run the manual page using:**
+```bash
+man ./man_3_printf_project
+```
 ## Future Enhancements
 ### Potential Extensions
-- *Additional format specifiers:* %u, %o, %x, %X, %p
-- *Flag character implementation:* +, -, 0, #, space
-- *Field width and precision specifications*
-- *Length modifiers support:* h, l, L
-- *Custom specifier extensions*
-
-
-
-
-
-
-
-
-
+- **Additional format specifiers:** `%u`, `%o`, `%x`, `%X`, `%p`
+- **Flag character implementation:** `+`, `-`, `0`, `#`, space
+- **Field width and precision specifications**
+- **Length modifiers support:** `h`, `l`, `L`
+- **Custom specifier extensions**
+- **Buffer optimization for performance** 
 
 
 
