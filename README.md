@@ -52,7 +52,19 @@ printf/
 - **NULL strings:** Handle NULL pointers gracefully  
 - **Empty format string:** Return 0 characters printed
 - **Format string ending with %:** Handle appropriately
+  
+## Usage Examples
+```c
+#include "main.h"
 
+int main(void)
+{
+    _printf("Hello, %s!\n", "World");
+    _printf("Character: %c\n", 'A');
+    _printf("Percent: %%\n");
+    _printf("Integer: %d\n", 42);
+    return (0);
+}
 ## Documentation
 A comprehensive manual page documenting the entire _printf project is available:
 ``
