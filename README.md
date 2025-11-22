@@ -63,34 +63,30 @@ man ./man_3_printf_project
 ```
 ## Future Enhancements
 
-### Additional Format Specifiers
-- Unsigned decimal: `%u`
-- Octal: `%o`
-- Hexadecimal (lowercase): `%x`
-- Hexadecimal (uppercase): `%X`
-- Pointer address: `%p`
+### Format Specifiers
+- `%u` - Unsigned decimal
+- `%o` - Octal  
+- `%x` - Hexadecimal lowercase
+- `%X` - Hexadecimal uppercase
+- `%p` - Pointer address
 
 ### Flag Characters
-- Plus sign: `+`
-- Minus sign: `-`
-- Zero padding: `0`
-- Hash: `#`
-- Space: ` ` (space)
+- `+` - Plus sign
+- `-` - Minus sign
+- `0` - Zero padding
+- `#` - Hash
+- ` ` - Space
 
 ### Length Modifiers
-- Short: `h`
-- Long: `l`
-- Long Long: `L`
+- `h` - Short
+- `l` - Long
+- `L` - Long long
 
 ### Advanced Features
 - Field width specifications
-- Precision specifications
+- Precision specifications  
 - Custom specifier extensions
-- Buffer optimization for performance
-
-
-
-
+- Buffer optimization
 
 
 
