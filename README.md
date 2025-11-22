@@ -64,27 +64,12 @@ int main(void)
     _printf("Integer: %d\n", 42);
     return (0);
 }
-## Documentation
-A comprehensive manual page documenting the entire _printf project is available.
-
-*Run the manual page using:*
-```bash
-man ./man_3_printf
-## Flowchart 
-https://github.com/user-attachments/assets/77d1b3e7-974c-43e7-968f-6ed5101aba7a
-
-## Future Enhancements
-### Potential Extensions
-- **Additional format specifiers:** %u, %o, %x, %X, %p
-- **Flag character implementation:** +, -, 0, #, space
-- **Field width and precision specifications**
-- **Length modifiers support:** h, l, L
-- **Custom specifier extensions**
-- **Buffer optimization for performance**
-# The Real Challenge
-This project pushes me beyond just writing code - it's about thinking through edge cases, understanding system calls, and building something that actually works reliably. It's one thing to use printf, but building it from scratch? That's where the real learning happens.
 
 
+Manual Page
+A comprehensive manual page is available for the entire _printf project:
+
+man ./man_3_printf_project
 
 
 
