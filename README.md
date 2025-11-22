@@ -71,17 +71,15 @@ man ./man_3_printf_project
 - `%p` - Pointer address
 
 ### Flag Characters
-- `+` - Plus sign
-- `-` - Minus sign
-- `0` - Zero padding
-- `#` - Hash
-- ` ` - Space
+`+` - Plus sign
+`-` - Minus sign
+`0` - Zero padding
+`#` - Hash
 
 ### Length Modifiers
-- `h` - Short
-- `l` - Long
-- `L` - Long long
-
+`h` - Short
+`l` - Long
+`L` - Long long
 ### Advanced Features
 - Field width specifications
 - Precision specifications  
