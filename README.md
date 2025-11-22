@@ -62,13 +62,31 @@ A comprehensive manual page is available for the entire _printf project:
 man ./man_3_printf_project
 ```
 ## Future Enhancements
-### Potential Extensions
-**Additional format specifiers:** `%u`, `%o`, `%x`, `%X`, `%p`
-**Flag character implementation:** `+`, `-`, `0`, `#`, space
-**Field width and precision specifications**
-**Length modifiers support:** `h`, `l`, `L`
-**Custom specifier extensions**
-**Buffer optimization for performance** 
+
+### Additional Format Specifiers
+- Unsigned decimal: `%u`
+- Octal: `%o`
+- Hexadecimal (lowercase): `%x`
+- Hexadecimal (uppercase): `%X`
+- Pointer address: `%p`
+
+### Flag Characters
+- Plus sign: `+`
+- Minus sign: `-`
+- Zero padding: `0`
+- Hash: `#`
+- Space: ` ` (space)
+
+### Length Modifiers
+- Short: `h`
+- Long: `l`
+- Long Long: `L`
+
+### Advanced Features
+- Field width specifications
+- Precision specifications
+- Custom specifier extensions
+- Buffer optimization for performance
 
 
 
