@@ -68,11 +68,10 @@ int main(void)
 
 ## Documentation
 A comprehensive manual page documenting the entire _printf project is available:
-``
-bash
-man ./man_3_printf_project
-``
 
+*Run the manual page using:*
+```bash
+man ./man_3_printf_project
 ## Flowcharts
 <img width="248" height="287" alt="Picture1" src="https://github.com/user-attachments/assets/77d1b3e7-974c-43e7-968f-6ed5101aba7a" />
 
